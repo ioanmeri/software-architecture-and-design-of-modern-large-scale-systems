@@ -50,3 +50,77 @@ Thirt part:
 
 ---
 
+## Levels of Abstraction
+
+- Software architecture can have many different levels of abstraction
+  - Classes / structs
+  - Modules / packages / libraries
+  - Services (processes / group of processes)
+ 
+### Advantages
+
+This more distributed, multiple service approach allows us to architect systems that can:
+- Handle large amounts of requests
+- Process and store very large amounts of data
+- Serve many users every day
+
+<b>Large Scale Systems - Examples</b>
+
+- Ride-sharing
+- Video-on-demand
+- Social media
+- Online video games
+- Investement Services
+- Banks
+
+---
+
+## Improtance of Design and Architecture
+
+### Benefits
+
+If we get the architecture right we can:
+
+- Go from a small startup to a multi-billion dollar company
+- Make a positive impact on millions of people
+
+### Risks
+
+Not doing a good job at the design phase can
+
+- Waste months of engineering time
+- Build a system that doesn't meet our requirements
+- Restructuring a system that was not architected correctly is very hard and expensive
+- So the stakes here are high
+
+---
+
+## Software Development Cycle
+
+- Design - Implementation - Testing - Deployment, repeated many times
+  - first iteration is most critical, sub sequent iterations make incremental changes
+
+Software Architecture is the output of the design phase, and the input to the implementation phase
+
+### Challenges of Software Architecture
+
+- We <b>cannot</b> prove Software Architecture to be either
+  - Corrent
+  - Optimal
+
+- What we <b>can</b> do to guarantee success is follow
+   - Methodical Design Process
+   - Architectural Patterns
+   - Best Practices
+
+---
+
+## Summary
+
+- Got the intuition and motivation for Software Architecture
+- Every software system has an architecture, which is critical for its success
+- Definition
+- Software Architecture on the overall Software Development Live Cycle
+
+---
+
