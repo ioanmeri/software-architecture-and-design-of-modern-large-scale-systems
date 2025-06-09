@@ -143,3 +143,97 @@ the 3 types of requirements are also referred to as <b>Architectural Drivers</b>
   - Constraints - Limitations and boundaries
  
 ---
+
+# 02. Feature Requirements - Step by Step Process
+
+- Formal Method of Gathering Functional Requirements
+- Example with a Sequence Diagram
+
+
+## Gathering Requirements
+  - Importance: Risks
+  - Challenges: Ambiguity & Scope
+
+<b>Requirement Gathering - Naive Way</b>
+
+- Ask the client to describe everything they need
+- For complex systems - Not a good approach
+
+<b>Methods of Gathering Requirements</b>
+
+- More powerful method of gathering requirements
+  - Use Cases
+    - Situation / Scenario in which our system is used
+  - User Flows
+    - A Step By Step / Graphical representation of each use case
+
+
+## Requirement Gathering Steps
+
+1. Identify all the actors /users in our system
+2. Capture and describe all the possible use-cases / scenarios
+3. User Flow - Expand each use case through flow of events
+
+Each event contains
+- Action
+- Data
+
+<b>Example: Hitchhiking Service </b>
+
+"Allow people to join drivers on a route, who are willing to take passengers for a fee"
+
+**Actors**
+
+- Driver
+- Rider
+
+**Rider Use Cases**
+
+- Rider first time registration
+- Driver registration
+- Rider login
+- Driver login
+- Successful match and ride
+- Unsuccessful ride
+
+---
+
+## Unified Modeling Language - Sequence Diagram
+
+**Sequence Diagram**: Diagram that represents interactions between actors and objects
+
+Part of the **Unified Modeling Language (UML)**: Standard for visualizing system design
+
+In practice
+  - UML diagrams are used mostly for sofware design
+  - No real standard diagrams representing software architecture in the industry
+  - UML is not strcitly followed in the industry
+  - Sequence Diagrams are frequently used to represent interactions between entities
+
+### Unified Modeling Language: Sequence Diagram
+
+![Sequence Diagram](assets/images/01.png)
+
+
+### User Flow for Ride Initialization
+
+Data is not represented in this diagram
+
+![Sequence Diagram](assets/images/02.png)
+
+### User Flow for Ride Completion
+
+![Sequence Diagram](assets/images/03.png)
+
+
+## Summary
+
+- Learned a formal way to capture the features and functional requirements
+- The three steps process
+  - Identifying all the users and actors
+  - Gathering all the use cases
+  - Expanding each use case with a flow of interactions between the actors in our system
+- Sequence diagram - a visual way that documents the interactions between actors and different components of our system
+
+
+---
