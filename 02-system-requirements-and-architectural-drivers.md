@@ -237,3 +237,125 @@ Data is not represented in this diagram
 
 
 ---
+
+# 03. System Quality Attributes Requirements
+
+a.k.a Non-Functional Requirements
+
+## Quality Attributes Motivation and Definition 
+
+### Motivation
+
+- Systems are frequently redesigned NOT because of functional requirements
+- But because the system as it stands
+  - Isn't **fast** enough
+  - Doesn't **scale**
+  - Slow to **develop**
+  - Hard to **maintain**
+  - Not **secure** enough
+
+### Definition
+
+- Quality attributes are non functional requirements
+- They describe
+  - The **qualities** of the **functional** requirements
+  - The overall **properties** of the **system**
+- Provide a **quality measure** on how well our system performs on a **particular dimension**
+- They have direct correlation with the architecture of our system
+
+### The Quality Attribute Example - Online Store 1
+
+> when a user clicks on a search button after they typed in a particular search keywords,
+> the user will be provided with a list of products that closely match the search
+> keyword within at most a 100 milliseconds
+
+Functional Requirement: The action that user takes
+
+Quality Attribute: Performance
+
+### The Quality Attribute Example - Online Store 2
+
+> The online store must be available to the users at least 99.9% of time
+
+Quality Attribute: Availability
+
+### The Quality Attribute Example - Online Store 3
+
+> Development team can deploy a new version of the online store at least twice a week
+
+Quality Attribute: Deployability
+
+---
+
+## Quality Attributes Considerations
+
+### 1. Testability and Measurability
+
+- Quality attributes need to be
+  - **Measurable**
+  - **Testable**
+- If we cannot prove that our system satisfied the required quality attributes we don't know if our system performs well or poorly
+
+#### Unmeasurable Quality Attribute - Example
+
+> When a user clicks on the buy button, the purchase confirmation must be displayed **quickly**(???) to the user
+
+### 2. Tradeoffs
+
+- No single software architecture can provide all the quality attributes
+- Certain quality attributes contradict one another
+- Some combinations of quality attributes are very hard / impossible to achieve
+- We (Software Architects) need to make the right **tradeoff**
+
+#### Trade Off - Login Page Example
+
+1. Performance - Login Time < 1 second
+   - Faster
+
+3. Security - Username, Password, SSL
+   - Slower
+
+### 3. Feasibility
+
+- We need to make sure that the system is capable of delivering with the client asking for
+- The client may ask for something that is either
+  - Technically impossible
+  - Prohibitively expensive to implement
+
+#### Feasibility Examples - Unrealistically low latency
+
+Client ➡️ Data Center: 100 - 150ms
+
+Cannot guarantee page loads to be less than 100ms, not even close because HTTP requires multiple round trips
+as multiple assets
+
+#### Feasibility Examples - 100% Availability
+
+- Our system can never fail
+- We never have a chance to take our system down for
+  - Maintenance
+  - Upgrade
+
+#### Feasibility Examples
+
+- Full protection against hackers
+- High resolution video streaming in limited bandwidth areas
+- Very high storage growth
+
+
+## Summary
+
+- Motivation for quality attributes
+- Quality attribute definition: "Quality measure on how well our system performs on a particular dimension"
+- 3 important considerations
+  - Testability and Measurability
+  - Trade offs
+  - Feasibility
+
+
+---
+
+
+
+
+
