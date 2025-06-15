@@ -75,6 +75,8 @@ Clarifying Questions:
 - <b>System Constraints</b>
   - Limitations and boundaries
 
+---
+
 ### Features / Functional Requirements
 
 - Describe the system behavior - what "the system must do"
@@ -102,6 +104,7 @@ minus service fees"
 - Input event: completion of the ride
 - Outcome of the operation: transfer of the money
 
+---
 
 ### Quality Attributes / Non-Functional Requirements
 
@@ -118,6 +121,8 @@ minus service fees"
 
 The software architecture defines the system quality attributes, and different architectures 
 provide us with different quality attributes
+
+---
 
 ### System Constraints
 
@@ -167,6 +172,8 @@ the 3 types of requirements are also referred to as <b>Architectural Drivers</b>
   - User Flows
     - A Step By Step / Graphical representation of each use case
 
+
+---
 
 ## Requirement Gathering Steps
 
@@ -226,6 +233,8 @@ Data is not represented in this diagram
 ![Sequence Diagram](assets/images/03.png)
 
 
+---
+
 ## Summary
 
 - Learned a formal way to capture the features and functional requirements
@@ -254,6 +263,8 @@ a.k.a Non-Functional Requirements
   - Hard to **maintain**
   - Not **secure** enough
 
+---
+
 ### Definition
 
 - Quality attributes are non functional requirements
@@ -262,6 +273,8 @@ a.k.a Non-Functional Requirements
   - The overall **properties** of the **system**
 - Provide a **quality measure** on how well our system performs on a **particular dimension**
 - They have direct correlation with the architecture of our system
+
+---
 
 ### The Quality Attribute Example - Online Store 1
 
@@ -300,6 +313,8 @@ Quality Attribute: Deployability
 
 > When a user clicks on the buy button, the purchase confirmation must be displayed **quickly**(???) to the user
 
+---
+
 ### 2. Tradeoffs
 
 - No single software architecture can provide all the quality attributes
@@ -314,6 +329,8 @@ Quality Attribute: Deployability
 
 3. Security - Username, Password, SSL
    - Slower
+
+---
 
 ### 3. Feasibility
 
@@ -356,6 +373,121 @@ as multiple assets
 ---
 
 
+# 04. System Constraints
+
+## Introduction
+
+- Once we define what our system must do, we have freedom on how to structure our system
+- While defining the final architecure, we have to make a lot of decisions
+- For _quality attributes_, we are expected to make trade-offs
+
+> A system contraint is essentially a decision that was already either fully or partially made for us,
+> restricting our degrees of freedom
+
+- Instead of looking a constraint as a choice that was taken away, we look at it as a decision that was already made
+- System Constraints are referred as pillars for software architecture because
+  - They provide us with a solid strating point
+  - The rest of the system need to be designed around them 
+
+---
+
+## Types of Constraints 
+
+There are three types of constraints
+
+### Technical constraints
+- Being locked to a particular **hardware/cloud vendor**
+- Having to use a particular **programming language**
+- Having to use a particular **database or technology**
+- Having to support certain **platforms, browsers, or OS**
+- Technical constraints may seem like they belong to implementation and not to software architecture
+- In practice, they affect the decisions we make in the design phase and put restrictions on our architecture
+
+### Examples
+
+- If our company makes a decision to run on-premise data centers then
+  - All the cloud architectures and paradigms will become unavailable to us
+  - We would have to implement a lot of non-trivial infrastructure
+- If we have to support older browsers or low-end mobile devices then
+  - We have to adapt our architecture to support those platforms and their APIs
+  - Keep providing a different, more high-end experience for newer browsers or higher-end devices
+
+---
+
+### Business Constraints
+
+- As engineers, we make the right decisions and architectural choices from a technical perspective
+- This forces us to make sacrifices in
+  - Architecture
+  - Implementation
 
 
+### Examples
+
+- Limited budget or a strict deadline will make us have very different choices than if we had an unlimited budget and unlimited time
+  - Different software architectural patterns are based on suitability between small startups or bigger organizations
+- Usage of third-party services with their own APIs and architectural paradigms as part of our architecture
+  - Using third-party shipping/billing providers for an online store
+  - Integration of different banks/brokers/security/fraud detection services for an investing platform
+
+
+---
+
+### Regulatory/legal constraints
+
+- Global 
+- Specific to a region
+
+### Examples
+
+- In the US, **HIPPA** (Health Insurance Portability and Accountability Act) places constraints on accessing patients' data
+- In the European Union, **GDPR** (General Data Protection Regulation) sets limitations on collecting, storing and sharing users' data
+
+---
+
+## Considerations
+
+### 1. Accepting Constraint Lightly
+
+- We shouldn't take any given constraint lightly
+  - There should be a distinction between
+    - Real constraints
+    - Self-imposed constraints
+   
+
+#### Examples
+
+- External rules and regulations may not have room to negotiate
+- Internal constraints can be negotiated
+- If locked to using a particular
+  - Hardware
+  - Cloud vendor
+  - Technologies
+- May be an opportunity to explore other options
+
+---
+
+### 2. Use loosely coupled architecture
+
+
+#### Examples
+
+- if limited to a database/third-party service, we need to make sure our system is not tightly coupled to that technology or APIs
+- Usage of different technology/service in future should need minimal changes
+- Different parts of the system can be decoupled to be easily replaced or updated independently
+
+### Summary
+
+- The 3rd type of architectural driver, the _System Contraints_
+- _Decision that was already either fully or partially made for use, restricting our degrees of freedom_
+- Three types
+  - Technical Constraints
+  - Business Constraints
+  - The legal constraints
+- Considerations
+  - Not Taking Constraints Lightly
+  - Use Loosely Coupled Architecture
+
+
+---
 
