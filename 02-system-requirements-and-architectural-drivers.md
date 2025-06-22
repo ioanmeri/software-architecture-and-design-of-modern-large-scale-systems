@@ -1,21 +1,19 @@
 # Section 2: System Requirements & Architectural Drivers
 
-[01. Introduction to System Design & Architectural Drivers](#01-introduction-to-system-design--architectural-drivers)
+[Introduction to System Design & Architectural Drivers](#introduction-to-system-design--architectural-drivers)
 
-[02. Feature Requirements - Step by Step Process](#02-feature-requirements---step-by-step-process)
+[Feature Requirements - Step by Step Process](#feature-requirements---step-by-step-process)
 
-[03. System Quality Attributes Requirements](#03-system-quality-attributes-requirements)
+[System Quality Attributes Requirements](#system-quality-attributes-requirements)
 
-[04. System Constraints](#04-system-constraints)
+[System Constraints](#system-constraints)
+
+---
+
+## Introduction to System Design & Architectural Drivers
 
 
-
-# 01. Introduction to System Design & Architectural Drivers
-
-- Requirements - Motivation
-- Requirements - Classification
-
-<b>Requirements</b>: Formal description of what we need to build
+> The requirements of a system is the formal description of what we need to build
 
 Large scale system requirements are different than the usual requirements 
 we typically get for implementing
@@ -25,7 +23,7 @@ we typically get for implementing
 
 ---
 
-## Big Scope and High Level of Abstraction
+### Big Scope and High Level of Abstraction
 
 
 Method / function -> Class -> Module -> Library -> Application
@@ -40,7 +38,7 @@ The range of possible ways to solve the problem is getting bigger -> More degree
 
 ---
 
-## High Level of Ambiguity
+### High Level of Ambiguity
 
 - System Design has high level of ambiguity
 - Two reasons
@@ -61,7 +59,7 @@ Clarifying Questions:
 
 ---
 
-## Importance of Gathering Requirements
+### Importance of Gathering Requirements
 
 - What happens if we don't get the requirements right?
 - We can simply build something and then fix it
@@ -76,7 +74,7 @@ Clarifying Questions:
 
 ---
 
-## Types of Requirements
+### Types of Requirements
 
 - <b>Features of the System</b>
   - Functional requirements
@@ -102,14 +100,14 @@ User Actions, Events --> System --> Result / Outcome
 
 <b>Examples</b>
 
-"When a rider logs into the service mobile app, the system must display a map
-with nearby drivers within 5 miles radius"
+_When a rider logs into the service mobile app, the system must display a map
+with nearby drivers within 5 miles radius_
 
 - Input: a rider logs into the service mobile app
 - Output: display a map with nearby drivers within 5 miles radius
 
-"When a rider is completed, the system will charge the rider's credit card and credit the driver,
-minus service fees"
+_When a rider is completed, the system will charge the rider's credit card and credit the driver,
+minus service fees_
 
 - Input event: completion of the ride
 - Outcome of the operation: transfer of the money
@@ -145,7 +143,7 @@ the 3 types of requirements are also referred to as <b>Architectural Drivers</b>
 
 ---
 
-## Summary
+### Summary
 
 - Importance of system requirements
 - Challenges
@@ -159,13 +157,13 @@ the 3 types of requirements are also referred to as <b>Architectural Drivers</b>
  
 ---
 
-# 02. Feature Requirements - Step by Step Process
+## Feature Requirements - Step by Step Process
 
 - Formal Method of Gathering Functional Requirements
 - Example with a Sequence Diagram
 
 
-## Gathering Requirements
+### Gathering Requirements
   - Importance: Risks
   - Challenges: Ambiguity & Scope
 
@@ -185,7 +183,7 @@ the 3 types of requirements are also referred to as <b>Architectural Drivers</b>
 
 ---
 
-## Requirement Gathering Steps
+### Requirement Gathering Steps
 
 1. Identify all the actors /users in our system
 2. Capture and describe all the possible use-cases / scenarios
@@ -215,7 +213,7 @@ Each event contains
 
 ---
 
-## Unified Modeling Language - Sequence Diagram
+### Unified Modeling Language - Sequence Diagram
 
 **Sequence Diagram**: Diagram that represents interactions between actors and objects
 
@@ -245,7 +243,7 @@ Data is not represented in this diagram
 
 ---
 
-## Summary
+### Summary
 
 - Learned a formal way to capture the features and functional requirements
 - The three steps process
@@ -257,11 +255,11 @@ Data is not represented in this diagram
 
 ---
 
-# 03. System Quality Attributes Requirements
+## System Quality Attributes Requirements
 
 a.k.a Non-Functional Requirements
 
-## Quality Attributes Motivation and Definition 
+### Quality Attributes Motivation and Definition 
 
 ### Motivation
 
@@ -288,9 +286,9 @@ a.k.a Non-Functional Requirements
 
 ### The Quality Attribute Example - Online Store 1
 
-> when a user clicks on a search button after they typed in a particular search keywords,
-> the user will be provided with a list of products that closely match the search
-> keyword within at most a 100 milliseconds
+_when a user clicks on a search button after they typed in a particular search keywords,
+the user will be provided with a list of products that closely match the search
+keyword within at most a 100 milliseconds_
 
 Functional Requirement: The action that user takes
 
@@ -298,41 +296,40 @@ Quality Attribute: Performance
 
 ### The Quality Attribute Example - Online Store 2
 
-> The online store must be available to the users at least 99.9% of time
+_The online store must be available to the users at least 99.9% of time_
 
 Quality Attribute: Availability
 
 ### The Quality Attribute Example - Online Store 3
 
-> Development team can deploy a new version of the online store at least twice a week
+_Development team can deploy a new version of the online store at least twice a week_
 
 Quality Attribute: Deployability
 
 ---
 
-## Quality Attributes Considerations
+### Quality Attributes Considerations
 
-### 1. Testability and Measurability
+**1. Testability and Measurability**
 
 - Quality attributes need to be
   - **Measurable**
   - **Testable**
 - If we cannot prove that our system satisfied the required quality attributes we don't know if our system performs well or poorly
 
-#### Unmeasurable Quality Attribute - Example
+**Unmeasurable Quality Attribute - Example**
 
-> When a user clicks on the buy button, the purchase confirmation must be displayed **quickly**(???) to the user
+_When a user clicks on the buy button, the purchase confirmation must be displayed **quickly**(???) to the user_
 
----
 
-### 2. Tradeoffs
+**2. Tradeoffs**
 
 - No single software architecture can provide all the quality attributes
 - Certain quality attributes contradict one another
 - Some combinations of quality attributes are very hard / impossible to achieve
 - We (Software Architects) need to make the right **tradeoff**
 
-#### Trade Off - Login Page Example
+**Trade Off - Login Page Example**
 
 1. Performance - Login Time < 1 second
    - Faster
@@ -340,30 +337,29 @@ Quality Attribute: Deployability
 3. Security - Username, Password, SSL
    - Slower
 
----
 
-### 3. Feasibility
+**3. Feasibility**
 
 - We need to make sure that the system is capable of delivering with the client asking for
 - The client may ask for something that is either
   - Technically impossible
   - Prohibitively expensive to implement
 
-#### Feasibility Examples - Unrealistically low latency
+**Feasibility Examples - Unrealistically low latency**
 
 Client ➡️ Data Center: 100 - 150ms
 
 Cannot guarantee page loads to be less than 100ms, not even close because HTTP requires multiple round trips
 as multiple assets
 
-#### Feasibility Examples - 100% Availability
+**Feasibility Examples - 100% Availability**
 
 - Our system can never fail
 - We never have a chance to take our system down for
   - Maintenance
   - Upgrade
 
-#### Feasibility Examples
+**Feasibility Examples**
 
 - Full protection against hackers
 - High resolution video streaming in limited bandwidth areas
@@ -383,9 +379,9 @@ as multiple assets
 ---
 
 
-# 04. System Constraints
+## System Constraints
 
-## Introduction
+### Introduction
 
 - Once we define what our system must do, we have freedom on how to structure our system
 - While defining the final architecure, we have to make a lot of decisions
@@ -401,11 +397,12 @@ as multiple assets
 
 ---
 
-## Types of Constraints 
+### Types of Constraints 
 
 There are three types of constraints
 
-### Technical constraints
+**Technical constraints**
+
 - Being locked to a particular **hardware/cloud vendor**
 - Having to use a particular **programming language**
 - Having to use a particular **database or technology**
@@ -413,7 +410,7 @@ There are three types of constraints
 - Technical constraints may seem like they belong to implementation and not to software architecture
 - In practice, they affect the decisions we make in the design phase and put restrictions on our architecture
 
-### Examples
+**Examples**
 
 - If our company makes a decision to run on-premise data centers then
   - All the cloud architectures and paradigms will become unavailable to us
@@ -424,7 +421,7 @@ There are three types of constraints
 
 ---
 
-### Business Constraints
+**Business Constraints**
 
 - As engineers, we make the right decisions and architectural choices from a technical perspective
 - This forces us to make sacrifices in
@@ -432,7 +429,7 @@ There are three types of constraints
   - Implementation
 
 
-### Examples
+**Examples**
 
 - Limited budget or a strict deadline will make us have very different choices than if we had an unlimited budget and unlimited time
   - Different software architectural patterns are based on suitability between small startups or bigger organizations
@@ -443,21 +440,21 @@ There are three types of constraints
 
 ---
 
-### Regulatory/legal constraints
+**Regulatory/legal constraints**
 
 - Global 
 - Specific to a region
 
-### Examples
+**Examples**
 
 - In the US, **HIPPA** (Health Insurance Portability and Accountability Act) places constraints on accessing patients' data
 - In the European Union, **GDPR** (General Data Protection Regulation) sets limitations on collecting, storing and sharing users' data
 
 ---
 
-## Considerations
+### Considerations
 
-### 1. Accepting Constraint Lightly
+**1. Accepting Constraint Lightly**
 
 - We shouldn't take any given constraint lightly
   - There should be a distinction between
@@ -465,7 +462,7 @@ There are three types of constraints
     - Self-imposed constraints
    
 
-#### Examples
+**Examples**
 
 - External rules and regulations may not have room to negotiate
 - Internal constraints can be negotiated
@@ -477,14 +474,16 @@ There are three types of constraints
 
 ---
 
-### 2. Use loosely coupled architecture
+**2. Use loosely coupled architecture**
 
 
-#### Examples
+**Examples**
 
 - if limited to a database/third-party service, we need to make sure our system is not tightly coupled to that technology or APIs
 - Usage of different technology/service in future should need minimal changes
 - Different parts of the system can be decoupled to be easily replaced or updated independently
+
+---
 
 ### Summary
 
