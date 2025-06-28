@@ -6,6 +6,7 @@
 
 [Availability](#availability)
 
+[Fault Tolerance & High Availability](#fault-tolerance--high-availability)
 
 - Testability
 - Deployability
@@ -405,3 +406,175 @@ Sometimes Uptime in (%) is mentioned as Availability
 - High availability based on cloud vendor standards is 99.9% or "3 nines"
   
 ---
+
+## Fault Tolerance & High Availability
+
+### What Prevents us from achieving HA - Sources of Failure
+
+**1. Human Error**
+
+- Pushing a faulty config in production
+- Running the wrong command/script
+- Deploying an incompletely tested new version of software
+
+**2. Software Errors**
+
+- Long garbage collections
+- Out-of-memory exceptions
+- Null pointer exceptions
+- Segmentation faults
+
+**3. Hardware Failures**
+
+- Servers / routers / storage devices breaking down due to limited shelf-life
+- Power outages due to natural disasters
+- Network failures because of
+  - Infrastructure issues
+  - General congestion
+
+---
+
+### Introduction to Fault Tolerance
+
+- Failures will happen despite
+  - Improvements to our code
+  - Review, testing, and release processes
+  - Performning ongoing maintenance to our hardware
+- _Fault Tolerance_ is the best way to achieve _High Availability_ in our system
+
+**Fault Tolerance**
+
+> Fault Tolerance enables our system to remain operational and available to the users
+> _despite_ failures within one or multiple of its components
+
+- When failures happen a _fault-tolerant_ system will
+  - Continue operating at the same / reduced level of performance
+  - Prevent the system from becoming unavailable
+ 
+**Tactics for achieving Fault Tolerance**
+
+- Fault Tolerance resolves around 3 major tactics
+  - Failure Prevention
+  - Failure Detection and Isolation
+  - Recovery
+
+---
+
+## 1. Failure Prevention
+
+- To prevent our entire system from going down, eliminate any **Single Point of Failure** in our system
+- Examples of a Single Point of Failure can be
+  - _One server_ where we're running our application
+  - Storing all our data on the _one instance_ of our databases that runs on a _single computer_
+- Best way to eliminate a single point of failure is through _Replication and Redundancy_
+
+**Examples**
+- Traffic ➡️ Multiple instances of server ➡️ If an instance goes down, we can redirect traffic to other instances
+- Traffic ➡️ Multiple DBs Replicas ➡️ If a replica goes down, we don't lose any data
+
+**Types of Redundancy**
+
+- **Spatial Redundancy** - Running replicas of our application on different computers
+- **Time Redundancy** - Repeating the same operation / request multiple times until we succeed / give up
+
+---
+
+### Strategies for Redundancy and Replication
+
+Two strategies which are extensively used in the industry in different systems
+
+- Active-Active architecture
+  - e.g. Requests go in all DB replicas, synced with each other
+  - Advantages
+    - Load is spread among all the replicas
+    - Identical to horizontal scalability
+    - Allows more traffic / Better performance
+  - Disadvantages
+    - All the replicas are taking requests
+    - Additional coordination required to keep active replicas in sync
+- Active-Passive architecture
+  - Passive replicas take periodically snapshots (follow) of the primary replica
+    - Advantages
+      - Implementation is easier
+      - There is a clear leader with up-to-date data
+      - Rest of the replicas are followers
+    - Disadvantages
+      - Ability to scale our system is lost
+      - All the requests still go to only one machine
+
+---
+
+## 2. Failure Detection & Isolation
+
+If one of the instances crashes because of software / hardware issues, then we need the ability
+to detect that this instance **is faulty and isolate** it from the rest of the group
+
+This way we can take actions, like stopping requests from going to this particular server
+
+Typically to detect such failures, we need a **Monitoring Service**
+
+The monitoring service can monitor the health of our instances, by simply sending it periodically
+**health check messages**
+
+Alternatively, it can listen to periodic messages called **heardbeats**, which should come periodically from our healthy application instances
+
+In either of those strategies, if the monitoring service does not hear from a particular server or a predefined duration of time, it can assume that that server is no longer available 
+
+**False Positive**
+
+- But the issue might be _the network_ or _long garbage collection_
+- Then the monitoring service is going to have a **false positive**
+- It assumed that a healthy host is faulty
+
+**False Negative**
+
+- The Monitoring Service shouldn't have false negative
+- False negatives mean that
+  - The servers may have crashed
+  - The monitoring system did not detect that
+
+**Monitoring System Functions**
+
+- Exchange of messages in the form of pings and heartbeats
+- Collect data about the number of errors each host gets per minute
+  - If the error rate in one of the hosts is high, it can interpret that as _failure of the host_
+- Collect information about time taken for each host to respond
+  - If the time to respond to requests becomes long, it can decide that the _host is slow_
+
+---
+
+## 3. Recovery from Failure
+
+> Availability = MTBF / ( MTBF + MTTR)
+
+Regardless of our system failure rate, if we can detect and recover from each failure
+faster than the user can notice, then our system will have high availability
+
+- Actions after detecting faulty instance / server
+  - Stop sending traffic / workload to that host
+  - Restart the host to make the problem go away
+  - _Rollback_ - going back to a version that was stable and correct
+
+**Rollbacks**
+
+- Common in databases
+  - If we get to a state violating some condition / data, we can _roll back to the last correct state_ in the past
+  - If we detect errors while rolling out new versions of software, we can _roll back to the previous version_
+
+---
+
+## Summary 
+
+- _Fault Tolerance_ - to achieve High Availability in large-scale systems
+- _Sources of Failures_
+  - Human Error
+  - Software Crashes
+  - Hardware Error
+- _Fault Tolerance_ is defined as "the ability for our system to remain operational and available to the user despite failures to one or some of its components"
+- _Tacticts_ to achieve _fault tolerance_
+  - Failure prevention
+  - Failure detection and isolation
+  - Recovery
+
+---
+
