@@ -578,3 +578,131 @@ faster than the user can notice, then our system will have high availability
 
 ---
 
+## SLA / SLI / SLOs
+
+### SLA - Service Level Aggrement
+
+SLA is an agreement between the Service Provider and Clients / Users
+
+- It is a legal contract that represents our quality service such as
+  - Availability
+  - Performance
+  - Data durability
+  - Time to respond to system failures
+- It states the penalties and financial consequences, if we breach the contract
+- The penalties include
+  - Full / Partial refunds
+  - Subscription / License extensions
+  - Service credits
+
+**SLA and Users**
+
+- SLAs exist for
+  - External paying users (always)
+  - Free external users (sometimes)
+  - Internal users within our company (occasionally)
+- Internal SLAs don't include any penalties
+- SLA for free external users makes sense if our system has major issues during a free trial of our service
+- We compensate those users with a _trial extension_ or _credits for future_
+- Companies providing entirely free services don't _publish SLA_
+- Cooperating third parties should also know our SLA
+
+---
+
+### SLOs - Service Level Objectives
+
+- Individual goals set for our system
+- Each SLO represents a _target value/range_ that our service needs to meet
+- For example, we can have
+  - Availability Service Level Objective of _3 nines_
+  - Response Time SLO of _less than 100 milliseconds at the 90th percentile_
+  - Issue Resultion Time Objective of _between 24 and 48 hours_
+- SLOs include
+  - Quality attributes from the beginning of the design process
+  - Other objectives of our system
+
+**SLO and SLA**
+
+- SLA
+  - Service Level Objective 1
+  - Service Level Objective 2
+  - Service Level Objective 3
+  - Service Level Objective 4
+- Systems that don't have SLA still must have SLOs
+- If we don't have set SLOs, our users won't know what to expect from our system
+
+---
+
+### SLIs - Service Level Indicators
+
+- Quantitative measure of our compliance with a service-level objective
+- It is the actual members
+  - Measured using a monitoring service
+  - Calculated from our logs
+- It can be later compared to our SLOs
+
+**Service Level Indicators - Examples**
+
+- Percentage of user requests receiving a successful response can be used as SLI for availability
+  - Later it can be compared to the _availability SLO of three nines_ that we set
+- The average  / percentile distribution of the response time experienced by users can be calculated
+  - Later it can be compared to the _end-to-end latency SLO of 100 milliseconds at the 90th percentile_ that we set
+
+**SLI, SLO and SLA**
+
+- SLO represent the _target values_ for the important quality attributes
+- Quality attributes need to _testable_ and _measurable_
+- If they weren't measurable, we wouldn't find any SLIs to validate that we meet our SLOs
+- If we can't prove that we meet the SLOs, we can't say that we meet our SLA
+- SLAs are crafted by _the business and the legal team_
+- SLOs are SLIs are defined and set by _the software engineers and architects_
+
+---
+
+### Imporant Considarations
+
+1. We shouldn't take every SLI that we can measure in our system and define an objective associated with it
+- Think about the metrics that users care about the most
+- Define the SLOs around those metrics
+- From that, right SLIs to track those SLOs can be found
+2. Promising fewer SLOs is better
+- With many SLOs it's hard to prioritize all of them equally
+- With few SLOs, it is easier to focus the entire software architecture around them
+3. Set realistic goals with a budget for error
+- We shouldn't commit to five-nines of availability even if we can provide that
+- We should commit to a _much lower availability_ that we can provide
+  - This _saves costs_ and _incorporates unexpected issues_
+  - This is true when our SLOs are represented in an _external SLA_
+- Companies define separate _external SLOs_ which are looser than internal SLOs
+  - Externally we can commit to 99.9% of availability
+  - But internally we commit to 99.99% availability
+  - We can strive for better quality internally while committing less to clients
+  - This would avoid financial penalties
+4. Create a recovery plan for when the SLIs show that we are not meeting our SLOs
+- We need to decide ahead of time what to do if
+  - The system goes down for a long time
+  - The performance degrades
+  - Reports about issues/bugs in the system
+- This plan should include
+  - Automatic alerts to engineers / DevOps
+  - Automatic failovers / restarts / rollbacks / auto-scaling policies
+  - Predefined handbooks on what to do in certain situations
+
+---
+
+### Summary
+- Three important terms in designing a real-life system are
+  - The Service Level Agreement or SLA
+  - The Service Level Objectives or SLOs
+  - The Service Level Indicators or SLIs
+- SLA is a legal contract between a service provider and its customers
+- SLA aggregates the most important SLOs that we promise our users
+- SLIs are used to measure our compliance with those SLOs
+- Four important considerations when defining SLOs told us to
+  - Define the most important SLOs that our users care about and then find the SLIs based on those objectives
+  - Commit to the bare minimum in terms of
+    - Number of objectives
+    - Aggressiveness (Leaving a budget for error)
+  - Have a recovery plan ahead of time to deal with situations of potential breach of SLOs
+ 
+---
