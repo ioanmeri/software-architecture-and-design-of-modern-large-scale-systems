@@ -8,6 +8,8 @@
 
 [Fault Tolerance & High Availability](#fault-tolerance--high-availability)
 
+[SLA / SLI / SLOs](#sla--sli--slos)
+
 - Testability
 - Deployability
 - Maintainability
