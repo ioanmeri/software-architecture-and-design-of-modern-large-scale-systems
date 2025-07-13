@@ -1,6 +1,7 @@
 # Section 4: API Design
 
 - [Introduction to API Design for Software Architects](#introduction-to-api-design-for-software-architects)
+- [RPC](#rpc)
 
 ---
 
@@ -83,6 +84,8 @@ APIs are classified into three groups
 - API should be _completely decoupled_ from our internal design and implementation
 - We can _change the design_ later without breaking the contract with our clients
 
+---
+
 **2. Easy to Use**
 - Easy to Use
 - Easy to understand
@@ -92,6 +95,8 @@ APIs are classified into three groups
   - Descriptive names for actions and resources
   - Exposing only the information and actions that users need
   - Keeping things consistent all across our API
+
+---
 
 **3. Keeping the Operations Idempotent**
 
@@ -115,6 +120,8 @@ APIs are classified into three groups
 - Because of _network decoupling_, the client application has no idea which scenario actually happened
 - if our operation is idempotent, they can simply _resend the same message_ again without any consequences
 
+---
+
 **4. API Pagination**
 
 - Important when a response from our system to the client request contains a very large payload or dataset
@@ -132,6 +139,8 @@ APIs are classified into three groups
   - Specify an offset within the overall dataset
 - To receive the next segment we increment the offset
 
+---
+
 **5. Asynchronous Operations**
 
 - Some operations need one big result at the end
@@ -147,6 +156,8 @@ APIs are classified into three groups
   - To track the progress and status of the operation
   - Receive the final result
 
+---
+
 **6. Versioning our API**
 
 - Best API design allows us to make _changes to the internal design and implementation_ without changing the API
@@ -154,6 +165,8 @@ APIs are classified into three groups
 - If we explicitly version the APIs we can
   - Maintain two versions of the API at the same time
   - Deprecate the older one gradually
+
+---
 
 **Defining our API**
 
@@ -179,7 +192,169 @@ APIs are classified into three groups
 
 ---
 
+## RPC
 
+### How RPC works
+
+**Remote Procedure Call (RPC)**
+
+Client Application ➡️ Remote Procedure Call ➡️ Server Application  ➡️ Subroutine ➡️ Response
+
+---
+
+**Unique Features of RPC**
+
+- The remote method invocation looks like calling a normal local method in terms of the developer code
+- This is referred to as _location transparency_
+- To the developer of the client application a method executed _locally_ or _remotely_ looks the same
+- RPC frameworks support _multiple_ programming languages
+- Applications written in different programming languages can talk to each other using RPC
+
+---
+
+**How RPC Works**
+
+Client ➡️ Interface Description Language ➡️ Server
+
+```
+debicAccount(UserInfo userInfo, int32 amount) -> Response
+
+UserInfo {
+  String name, lastName;
+  String creditCardNumber;
+  int32 securityCode;
+  ...
+}
+
+
+Response {
+  bool success;
+  String errorMessage;
+}
+
+```
+
+➡️ RPC Code Generation Tool ➡️ Generated Code ➡️ Server (Server Stub)
+
+➡️ RPC Code Generation Tool ➡️ Generated Code ➡️ Client (Client Stub)
+
+---
+
+**Data Transfer Objects (DTO)**
+
+DTOs (auto-generated) are compiled to classes or structs depending on the programming languages
+
+**RPC in Action**
+
+Client ➡️ `Response response = debitAccount(userInfo, 100);` 
+
+➡️ Client Stub
+
+➡️ Data Serialization / Marshalling
+
+➡️ Transport layer
+
+➡️ Data Deserialization / Unmarshalling
+
+➡️ Server Stub
+
+➡️ Debit Account Implementation
+
+---
+
+**RPC Over Time**
+
+- This concept of implementing an API using an RPC has been around for decades
+- The only thing that changes over time are
+  - The frameworks
+  - The details of their implementation
+  - Their efficiency
+
+---
+
+**RPC and Developers**
+
+- Our job as API developers is
+  - To pick an appropriate framework
+  - Define the API and the relevant data types using IDL
+  - Publish that description
+
+---
+
+## Benefits of RPC
+
+- Convenience to the developers of the client applications
+- They can communicate with our system easily by _calling methods on objects_ similar to calling _normal_, local methods
+- The details of _communication establishment_ or _data transfer between client to server_ are abstracted away from the developers
+- Failures in communication with server result is an _error or exception_ depending on the programming language
+
+---
+
+## Drawbacks of RPC
+
+- Unlike local methods executed on the client-side, remote methods are
+  - Slower
+    - The client never knows how long those remote method invocations can take
+    - Slowness can be addressed by introducing _asynchronous versions_ for slow methods
+  - Less reliable
+    - The client is remotely running on a computer and is using the network to communicate with our system
+    - Carelessness in designing the API can introduce confusing situations for the client application developers
+
+**Example**
+
+Online Store Company ➡️ `debitAccount()` ➡️ API ➡️ Server ➡️ Credit Card Company
+
+A failure or an exception in calling such a method can leave them with a dilemma of whether they should retry calling the method (and running the risk of charging the user twice) or not retrying it (and running the risk of not charging the user at all)
+
+- There is no real way for the client to know whether
+  - The server _received the message_ and the _acknowledgement message got lost_ in the network
+  - The _server crushed_ and _never received the message_
+- To solve the unreliability problem, we can stick to the best practice of _making our operations idempotent_ when possible
+
+---
+
+### When to Use RPC
+
+- RPC are used in communication between _two backend systems_
+- Frameworks that support RPC from frontend clients are less common
+- RPC is a perfect choice for
+  - API provided to a different company instead of an end user app/web page
+  - Communication between different components within a large system
+  - Abstracting away the network communication and focusing only on the actions the client wants to perform
+- RPC approach would not be a good fit
+  - Where we don't want to abstract the network communication away
+  - When we want to take direct advantage of HTTP cookies or headers
+
+
+**Importance of RPC**
+
+- RPC revolves more around _actions_ and les around _data/resources_
+- In RPC, every action is a new method with a _different name and signature_
+- We can define many methods / actions _without limitation_
+
+**Other API Styles**
+
+- Other styles of APIs can be a better fit when
+  - Designing an API that is more _data-centric_
+  - All the operations needed are simple _CRUD (Create, Read, Update, Delete)_ operations
+
+---
+
+## Summary
+
+- RPC - Remote Procedure Calls
+- 3 Components
+  - Interface Description Language (IDL)
+  - Client Stub
+  - Server Stub
+- Benefits
+  - Local Transparency
+  - Network communication abstraction
+- Drawbacks
+  - Slowness
+  - Unreliability
+
+---
 
 
 
