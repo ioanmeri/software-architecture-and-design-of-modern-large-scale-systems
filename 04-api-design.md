@@ -2,6 +2,7 @@
 
 - [Introduction to API Design for Software Architects](#introduction-to-api-design-for-software-architects)
 - [RPC](#rpc)
+- [REST API](#rest-api)
 
 ---
 
@@ -355,6 +356,327 @@ A failure or an exception in calling such a method can leave them with a dilemma
   - Unreliability
 
 ---
+
+## REST API
+
+### REST API - Introduction
+
+- A new style that originated from a dissertation published by Roy Fielding in 2000
+- REST stands for _Representational State Transfer_
+- Set of **architectural constraints** and **best practices** for defining APIs for the web
+- It is NOT a standard or a protocol
+- It is an architectural style for designing APIs that are easy for our clients to use and understand
+- It makes it easy for us to build a system with quality attributes such as
+  - Scalability
+  - High availability
+  - Performance
+
+---
+
+### RESTful API
+
+> An API that obeys the REST architectural constraints is called a RESTful API
+
+---
+
+## RPC vs REST API
+
+**The RPC API style**
+
+- Resolves around **methods** that are exposed to the client
+- **Methods** are organized in an interface / set of interfaces
+- Our system is abstracted away from the client through a set of **methods** the client can call
+- API expansion through adding more **methods**
+
+**REST API style**
+
+- Takes a more _resource_-oriented approach
+- The main abstraction to the user is a **named resource**
+- The **resources** encapsulate different entities in our system
+- REST API allows the user to manipulate those _resources_ through small number of methods
+
+
+Client ➡️ HTTP Request ➡️ Server ➡️ Representation of the Resource's State ➡️ HTTP Response
+
+Only returns a Representation of the state, resource Implementation can be implemented in a completely different way
+
+---
+
+### RPC vs REST API - HATEOAS
+
+- REST API is dynamic in nature
+- In RPC, the actions the client can take regardless of its state are statically defined ahead of time by IDL
+- In RESTful APIs, this interface is a lot more dynamic through **Hypermedia as the Engine of the Application State** (HATEOAS)
+- Achieved by accompanying a state representation response to the client with hypermedia links
+
+---
+
+### Hypermedia as the Engine of Application State
+
+```
+GET .../users/john-smith
+
+Response:
+{
+  "accounts_status": {
+    "user_id": 123,
+    "total_incoming_messages": 1003,
+    "unread_messages": 5,
+    "total_sent_messages": 567
+  },
+  "links": {
+    "messages": "/users/123/messages",
+    "profile": "/users/123/profile",
+    "threads": "/users/123/threads"
+  }
+}
+```
+---
+
+### REST API Quality Attributes
+
+**1. Statelessness**
+
+- The server is stateless
+- It does NOT maintain any session information about client
+- Each message should be served in isolation without any information about previous requests
+
+If the server doesn't maintain any session information, we can easily **run a group of servers** and spread
+the load of the request from the client among a large number of machines, completely transparently to the client
+
+**2. Cacheability**
+
+- The server has to either explicity / implicitly define _each response_ as either
+  -  Cacheable
+  -  Non-cacheable
+
+Allows the client to eliminate the potential round trip to the server and back, if the response is cached somewhere closer to the client / reduce the load to our system
+
+---
+
+### Named Resources
+
+- Each resource is **named** and **addressed** using a **URI** (Uniform Resource Identifier)
+- The resources are organized in a hierarchy
+- Each resource is either
+  - _Simple resource_
+  - _Collection resource_
+
+---
+
+### Hierarchy of Resources
+
+- The hierarchy is represented using "/"
+- **A simple resource**
+  - Has a state
+  - Can contain one / more sub-resources
+- **A collection resource**
+  - Contains a list of resources of the _same type_
+
+---
+
+### Named Resources - Example
+
+```
+http://best-movies-service/movies <- Collection Resource
+
+http://best-movies-service/movies/movie-01 <- Simple Resource of Type Movie
+http://best-movies-service/movies/movie-02 <- Simple Resource of Type Movie
+http://best-movies-service/movies/movie-03 <- Simple Resource of Type Movie
+...
+http://best-movies-service/movies/movie-20 <- Simple Resource of Type Movie
+
+http://best-movies-service/movies/movie-01/directors <- Collection Resource
+http://best-movies-service/movies/movie-01/actors <- Collection Resource
+
+http://best-movies-service/movies/movie-01/actors/john-smith
+http://best-movies-service/movies/movie-01/actors/john-smith/profile-picture
+http://best-movies-service/movies/movie-01/actors/john-smith/contact-information
+```
+
+---
+
+### Representation of Resources
+
+- The representation of each resource state can be expressed in a variety of ways such as
+  - An image
+  - A link to a movie stream
+  - An object
+  - An HTML page
+  - Binary blob
+  - Executable code like javascript
+
+---
+
+### Resources - Best Practices
+
+**1. Naming our resources using nouns**
+
+- It makes a clear distinction from the actions that we're going to take
+- We're going to use verbs for the actions on those resources
+
+**2. Making a distinction between collection resources and simple resources**
+
+- The distinction is made by using
+  - Plural names for _collections_
+  - Singular names for _simple resources_
+
+**3. Giving the resources clear and meaningful names**
+
+- The users will find it very easy to use our API
+- It will help prevent incorrect usages and mistakes
+- Overly generic collection **should be avoided**
+  - elements
+  - entities
+  - items
+  - instances
+  - objects
+
+**4. The resource identifiers should be unique and URL friendly**
+
+- They can be used easily and safely on the web
+
+
+---
+
+### REST API Operations
+
+- Unlike RPCs, the REST API limits the number of methods we can perform on each resource
+- These predefined operations are
+  - **Creating** a new resource
+  - **Updating** an existing resource
+  - **Deleting** an existing resource
+  - **Getting** the current state of the resource (list of sub-resources in case of collection resource)
+ 
+---
+
+### REST Operations to HTTP Methods
+
+- REST operations are mapped to HTTP methods as follows
+  - **Create** a new resource                   ➡️ POST
+  - **Update** an existing resource             ➡️ PUT
+  - **Delete** an existing resource             ➡️ DELETE
+  - **Get** the state of a resource             ➡️ GET
+  - **List** the sub-resources of a collection  ➡️ GET
+- In some situations, we define additional custom methods
+
+---
+
+### HTTP Methods - Guarantees
+
+1. **GET** method is considered **safe** - applying it to a resource would not change its state
+2. **GET,PUT,DELETE** methods are **idempotent** - applying them multiple times would result in the same state change as applying them once
+3. **GET** requests are considered cacheable by default
+4. Responses to **POST** requests can be made cacheable
+   
+---
+
+### Sending Additional Information
+
+- To send additional information to our system as part of a **POST** or **PUT** command use
+  - JSON
+  - XML
+
+---
+
+## Defining REST API Step by Step
+
+**Movie Streaming Service - Example**
+
+1. Identifying Entities
+2. Mapping Entities to URIs
+3. Defining Resources' Representations
+4. Assigning HTTP Methods to Operations on Resources
+
+
+**1. Entities in Movie Streaming Service**
+
+- Users
+- Movies
+- Reviews
+- Actors
+
+
+**2. Mapping Entities to URIs**
+
+- Users
+  - `/users`
+  - `/users/{user-id}`
+- Movies
+  - `/movies`
+  - `/movies/{movie-id}`
+- Actors
+  - `/actors`
+  - `/actors/{actor-id}`
+- Reviews
+  - `/movies/{movie-id}/reviews`
+  - `/movies/{movie-id}/reviews/{review-id}`
+
+
+**3. Defining Resources' Representations**
+
+```
+GET /movies
+
+{
+  "movies": [
+    {
+      "name": "Pirates of the Caribbeans",
+      "id": "movie-123"
+    },
+    {
+      "name": "Lord of the Rings",
+      "id": "movie-456"
+    }
+    ...
+  ]
+}
+```
+
+```
+GET /movies/{movie-id}
+
+{
+  "movie-info": {
+    "name": "Pirates of the Caribbeans",
+    "Id": "movie-123"
+  },
+  "links": {
+    "movie-stream": "...",
+    "reviews": "/movies/movie-123/reviews",
+    "actors": "/actors?movie-id=movie-123"
+  }
+}
+```
+
+**4. Assigning HTTP Methods to Operations on Resources**
+
+Users
+- POST `/users`             ➡️ Create New User
+- GET `/users/{user-id}`    ➡️ Get User Information
+- PUT `/users/{user-id}`    ➡️ Update User Information
+- DELETE `/users/{user-id}` ➡️ Delete Existing user
+
+---
+
+## Summary
+
+- We learned about a new style of API which is called _Representational State Transfer_ or REST
+- We compared the REST API to the general RPC approach
+  - More resource-oriented
+  - Limits the number of operations we can perform on those named resources to just a few methods
+- REST API requirements allow us to provide
+  - High performance
+  - High availability
+  - Scalability
+- What resources are, how they're organized and what operations we can perform on them
+- We provided a step-by-step process on defining the REST API using a real world example
+
+---
+
+
+
+
 
 
 
