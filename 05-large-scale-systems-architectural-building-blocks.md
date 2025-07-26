@@ -1,6 +1,7 @@
 # Section 5: Large Scale Systems Architectural Building Blocks
 
-[Load Balancer](#load-balancer)
+- [Load Balancer](#load-balancer)
+- [Message Brokers](#message-brokers)
 
 ---
 
@@ -164,4 +165,119 @@ To avoid a LB being a Single Point Of Failure, we can place multiple load balanc
   - Scale to millions of users located in _different geographical locations_
 
 ---
+
+## Message Brokers
+
+### Synchronous Communication Drawbacks
+
+
+Sender Application ➡️ Connection ➡️ Load Balancer ➡️ Connection ➡️ Receiver Application
+
+- Both application instances have to remain healthy and maintain this connection to complete the transaction
+  - It's easy to achieve this when two services exchange small messages that take short time to process and respond
+  - It can get complex when a service takes a long time to complete its operation and provide a response 
+
+
+![Synchronous processing](assets/images/04.png)
+
+
+- No padding in the system to absorb a sudden increase in traffic or load
+
+---
+
+### Message Broker
+
+- A software architectural building block that uses the _queue data structure to store messages_ between senders and receivers
+- A message broker is used _inside our system_ and not exposed externally
+
+--
+
+### Message Broker - Capabilities
+
+- Basic capabilities
+  - Storing / temporarily buffering the messages
+  - Message routing
+  - Transformation validation
+  - Load balancing
+
+---
+
+### Loose Coupling Between Senders & Receivers
+
+- Entirely _decouple_ senders from the receivers
+- The fundamental building block of **asynchronous** software architecture
+
+The client will receive an acknowledgement immediately after placing the order.
+
+Later will get an email asynchronously with an official confirmation for purchasing the ticker.
+
+We can break the ticket reservation service into multiple services, each for one stage in the transaction.
+
+Frontend Service ➡️ Message Broker ➡️ Reservation Service ➡️ Message Broker ➡️ Billing Service ➡️ Message Broker ➡️ Email Service
+
+
+---
+
+### Online Store - Buffering
+
+The important benefit that a message broker provides us with is buffering of messages to absorb traffic spikes
+
+---
+
+### Message Broker - Benefits
+
+- Most message broker implementations offer the _publish / subscribe pattern_ where multiple services can
+  - Publish messages to a particular channel
+  - Subscribe to that channel
+  - Get notified when a new event is published
+
+---
+
+### Online Store - Pub / Sub
+
+![Online Store Pub Sub](assets/images/05.png)
+
+---
+
+### Fault Tolerance
+
+- A message broker adds a lot to fault tolerance to our system
+- It allows different services to communicate with each other while some of them may be unavailable temporarily
+- Message brokers prevent messages from being lost
+
+---
+
+### Availability and Scalability
+
+- The additional fault tolerance helps us provide high availability to our users
+- A message broker can queue up messages when there is a traffic spike
+- It allows our system to scale to high traffic
+
+---
+
+### Performance
+
+- We pay a little in performance when it comes to latency
+- A message broker adds significant indirection between two services
+- This performance penalty is not too significant for most systems
+
+---
+
+### Summary
+
+- We learned about a fundamental building block to any asynchronous software architecture - Message Broker
+- We got the motivation for using a message broker
+- We talked about different benefits and capabilities
+  - Asynchronous architecture
+  - Buffering
+- We talked about the two main quality attributes
+  - _High availability_
+  - _Scalability_
+
+---
+
+
+
+
+
 
