@@ -2,6 +2,7 @@
 
 - [Load Balancer](#load-balancer)
 - [Message Brokers](#message-brokers)
+- [API Gateway](#api-gateway)
 
 ---
 
@@ -276,8 +277,134 @@ The important benefit that a message broker provides us with is buffering of mes
 
 ---
 
+## API Gateway
+
+### Video Streaming and Sharing System Example
+
+- Upload Videos
+- Watch Videos
+- Comment on Videos
+
+**Intial: Video Streaming and Sharing Service**
+
+- Serve Frontend: HTTP, JS
+- User Profile Management
+- Channel Subscriptions
+- Notifications
+- Video Storing and Streaming
+- Users Comments
+- Security
+
+Too Complex!
+
+**Stage 1: Splitting up Services**
+
+- Frontend Service
+- Users Service
+- Video Service
+- Comments Service
+
+---
+
+### Consequences of Splitting a Service
+
+- The single API now split into _multiple_ APIs
+- So now we need to
+  - Update the frontend code to be aware of the internal organization of our system
+  - Make calls to different services on the browser depending on the task
 
 
+**Home Page Request**
+
+User ➡️ Frontend Service + Users Service
 
 
+**Watch a Movie Request**
 
+User ➡️ Frontend Service + Video Service + Comments Service
+
+
+Now, it's service needs to implement it's own security, authentication and authorization
+- adds performance overhead
+- duplication
+
+
+---
+
+### API Gateway
+
+API Gateway is API management service, that seats in between the client and a collection of backend services.
+
+- The API Gateway follows a software architecture pattern called _API composition_
+- We compose all the APIs of all our services into one single API
+- The client applications can call one single service
+
+---
+
+### API Gateway - Benefits
+
+- Seamless internal modifications / Refactoring
+  - e.g. spliting the Frontend Service
+    - Desktop Frontend Service
+    - Mobile Frontend Service
+  - Video Splitting Service to
+    - High Resolution Service
+    - Low Resolution Service
+- Consolidating all security, authorization, and authentication in a single place
+  - Depending on the permissions and the role of the user, we can allow different operations such as
+    - Viewing private videos
+    - Deleting / uploading new videos
+  - We can also implement _rate-limiting_ at the API Gateway to block Denial of Service (DoS) attacks from malicious users
+- Request Routing
+  - We save the overhead of authenticating every request from the user at each service by performing it in a single place
+  - We can also save the user from making multiple requests to the different services
+- Static content and response caching
+- Monitoring and alerting
+- Protocol Translation
+  - e.g. Externally expose REST API JSON, internally can use gRPC / PROTO Buffer
+  - Legacy service that support HTTP 1.0 REST API and represent their objects using XML
+  - Third parties which have systems that support Thrift / SOAP and want to use our API protocol and formats
+
+---
+
+
+### API Gateway - Considerations
+
+- API Gateway **shouldn't contain any business logic**
+  - The main purpose of an API Gateway is
+    - API composition
+    - Routing requests to different services
+  - **Anti Pattern**: Following the anti-pattern of adding business logic to our API Gateway will make it too smart
+    - We may end up again with a single service that
+      - Does all the work
+      - Contains an unmanageable amount of code
+    - This was the problem we wanted to solve initially by splitting our system into _multiple services_
+- API Gateway may become a **Single Point of Failure**
+  - We can solve
+    - Scalability
+    - Availability
+    - Performance
+    - by deploying multiple instances of API Gateway and placing them all behind a _load balancer_
+  - Our entire system becoms unavailable of the client if
+    - We push a bad release
+    - Introduce a bug that may crush the API Gateway
+  - Eliminate any possibility of human error
+  - Deploy new releases to the API Gateway with caution
+- Avoid bypassing API Gateway from external services
+
+---
+
+### Summary
+
+- We learned about a important architectural building block and design pattern, the _API Gateway_
+- We learned about the benefits of an API Gateway such as
+  - _API composition_
+  - _Security_
+  - _Caching_
+  - _Monitoring_
+- We talked about considerations for correctly using an API Gateway which are
+  - Keeping business logic out
+  - Being careful in making modifications
+  - Not breaking the abstraction by making all external API calls through API Gateway only
+ 
+---
