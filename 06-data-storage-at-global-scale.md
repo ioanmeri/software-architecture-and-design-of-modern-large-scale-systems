@@ -1,5 +1,10 @@
 # Section 6: Data Storage at Global Scale
 
+- [Relational Databases & ACID Transactions](#relational-databases--acid-transactions)
+- [Non-Relational Databases](#non-relational-databases)
+
+---
+
 ## Relational Databases & ACID Transactions
 
 ### Relational Databases - Table Structure
@@ -159,6 +164,144 @@ Once a transaction is complete, its _final state_ will **persist** and remain pe
 
 ---
 
+## Non-Relational Databases
 
- 
+### Non-Relational Database - History
 
+- A relatively new concept
+- Became popular in the mid-2000s
+- Solved the drawbacks of relational databases
+  - records in a table have the same schema
+  - e.g. if we want to add a middle name in a User Table only for certain users
+
+---
+
+### Non-Relational Database - Logical Grouping
+
+- They allow to logically group a set of records **without** forcing all of them to have the same structure
+- We can easily add additional attributes to one / multiple records **without** affecting the already existing records
+
+---
+
+### Relational Database - Support Tables Only
+
+- Tables are natural for humans to analyze records **but** are less intuitive for programmers
+- Most programming languages
+  - Don't have table as a data structure
+  - Support computer-science oriented data structures like
+    - Lists
+    - Arrays
+    - Maps
+
+---
+
+### Non-Relational Database - Support Native DS
+
+- Don't store data in tables
+- Support more native data structures to programming languages
+- This eliminates the need for an ORM (Object Relational Mapping)
+
+---
+
+### Efficient Storage vs Fast Queries
+
+- Relational Databases: designed for **efficient storage**
+- Non-Relatinal Databases: designed for **faster queries**
+
+---
+
+### Non-Relational Database - Trade-offs
+
+- When we allow **flexible schemas** we lose the ability to easily analyze those records
+- Analyzing multiple groups of records (join operations) also becomes hard
+- **ACID** transactions are rarely supported by non-relational databases
+
+---
+
+### Non-Relational Database - Categories
+
+**1. Key / Value Store**
+
+We have a key that uniquely identifies the record and a value that represents the data associated with the record. This value is completely opaque to the database and can as simple as an integer or a string or complex as an array, a set or a binary blob
+
+- Key / Value store can be seen as a large-scale **hashtable** or **dictionary**
+- It has very few constraints on the type of values we have for each key
+
+Perfect candidate for counter that multiple instances read or increment, or caching pages or pieces of data that can be easily queried and fetched without needing to do slow / complex queries
+
+---
+
+**2. Document Store**
+
+- We can store collections of documents, with more structure inside each document
+- Each document is an object with different attributes
+- Those attributes can be of different types
+- Documents inside a document store are easily mapped to objects inside a programming language
+
+Examples
+- JSON object
+- YAML
+- XML
+
+
+---
+
+**3. Graph Database**
+
+- Extension of a document store with additional capabilities to
+  - Link
+  - Traverse
+  - Analyze
+  - multiple records more efficiently
+- Optimized for navigating and analyzing relationships between different records
+
+Use Cases
+- Fraud detection
+  - Multiple logical users identified as same person trying to initiate multiple transactions using same email / computer
+- Recommendation engines
+  - Recommend new products to users based on past purchase history or friends of the user
+
+---
+
+### How to Choose a Non-Relational Database
+
+- Analyze our use case
+- Figure out which properties of a database are
+  - Most important
+  - Can be compromised
+
+---
+
+### When To Choose a Non-Relational Database
+
+- Non-relational databases
+  - Superior when it comes to query speed
+  - Perfect choice for caching
+- Handling real-time big data
+- Data is not structured
+- Different records can contain different attributes
+
+Examples:
+
+- We can store very common query results that correspond to user views in a Non-Relational Database to improve the user experience
+- User Profiles
+- Content Management
+
+---
+
+### Summary
+
+- We learned about the second type of database - the Non-Relational Databases or NoSQL Databases
+- We learned some of the main advantages of Non-Relational Databases such as
+  - Flexible schema
+  - Fast query
+  - More natural data structures for programming languages
+- We talked about the 3 main categories of Non-Relational Databases
+  - Key / Value stores
+  - Document stores
+  - Graph databases
+- We talked about few considerations for choosing a database
+- We mentioned classic use cases that are suitable for non-relational databases
+
+
+---
