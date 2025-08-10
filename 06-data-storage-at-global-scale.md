@@ -2,6 +2,7 @@
 
 - [Relational Databases & ACID Transactions](#relational-databases--acid-transactions)
 - [Non-Relational Databases](#non-relational-databases)
+- [Techniques to Improve Performance, Availability & Scalability of Databases](#techniques-to-improve-performance-availability--scalability-of-databases)
 
 ---
 
@@ -303,5 +304,222 @@ Examples:
 - We talked about few considerations for choosing a database
 - We mentioned classic use cases that are suitable for non-relational databases
 
+---
+
+## Techniques to Improve Performance, Availability & Scalability of Databases
+
+### Database Indexing
+
+- Speeds up retrieval operations
+- Locate the desired records in a sublinear time
+- Without indexing, those operations may
+  - Require a "full table scan"
+  - Take a long time for large tables
+
+**Example**
+
+```
+SELECT * FROM USERS WHERE City = "Los Angeles"
+```
+
+Without index, our database would have to scan linearly all the rows, the same for LastName, Age or income
 
 ---
+
+### Full Table Scan - Performance
+
+- Those operations if performed very **frequently** or on **large tables** can
+  - Become a performance bottleneck
+  - Impact our users' experience
+
+---
+
+### Database Index - Definition
+
+> A database index is a helper table, created from a particular column / group of columns
+
+![Index Table](assets/images/06.png)
+
+---
+
+### Index Table - Data Structures
+
+- Once the index table is created we can put it inside a data structure like
+  - Hashmap
+  - Self-balanced tree (B-Tree)
+
+**Example 1**
+
+If we place the index in a hash table, then the query can return the list immediately, without the need to scan the entire table
+
+```
+SELECT * FROM USERS WHERE City = "Los Angeles"
+```
+
+![Index Table](assets/images/07.png)
+
+**Example 2**
+
+Age Index Table - Binary Tree, in logarithmic time complexity, avoid scanning and sorting it
+
+```
+SELECT * FROM USERS WHERE Age < 85 AND Age > 18 ORDER BY Age
+```
+
+![Index Table](assets/images/08.png)
+
+
+---
+
+### Composite Index
+
+- Indexes can be formed not only from **one column** but from a **set of columns**
+
+**Example**
+
+```
+SELECT * FROM USERS WHERE City = "Los Angeles" AND LastName = "Smith"
+```
+
+If we create a composite index of both columns, we can have a direct mapping from a pair of values to the rows containing them
+
+![Index Table](assets/images/09.png)
+
+---
+
+### Indexing Tradeoffs
+
+- **Read queries** are faster in the expense of
+  - Additional space for storing the index tables
+  - Speed of write operations
+
+**Note on Other Types of Databases**
+
+Indexing is also used extensively in Non-Relational Databases such as document stores
+
+---
+
+### Database Replication
+
+When we store a mission critical data about a business in a database, our database instance become a potential Single Point of Failure.
+
+If we replicate our data, and run multiple instances of our database on different computers we can increase the fault tolerance of our system, which in return provides us with higher availability.
+
+Queries can continue going to the available replicas, while we work to either restore or replace the faulty instance
+
+In additional to **higher availability**, we can get **better performance** in the form of higher throughput. We can handle a much larger amount of queries if we distribute them among a larger number of computers
+
+---
+
+### Database Replication Tradeoffs
+
+- Higher complexity when it comes to operations like
+  - Write
+  - Update
+  - Delete
+- It is not a trivial task to make sure that concurrent modifications to the same records
+  - Don't conflict with each other
+  - Provide guarantees in terms of consistency and correctness
+
+---
+
+### Database Replication - Distributed Database
+
+- Distributed databases
+  - Difficult to designing, configure and manage on a high scale
+  - Require competency in the field of distributed systems
+
+---
+
+### Database Replication - Support
+
+- Database replication is supported by all modern databases
+  - Non-Relational Databases: Incorporate replication ouf-of-the-box
+  - Relational Databases: Support varies among different implementations
+
+---
+
+### Database Partitioning vs Database Replication
+
+Unlike replication where we run multiple instances of our database with the **same copy of the data** in each one of them.
+
+When we do database partitioning, **we split the data** among different database instances
+
+For increased performance, we typically run each instance on separate computer
+
+
+---
+
+### Database Partitioning - Advantages
+
+- We can scale our database to store more data
+- Different queries can be performed completely in **parallel**
+- We get both
+  - Better Performance
+  - Higher Scalability
+
+---
+
+### Database Partitioning - Drawback
+
+Database sharding turns our database into a distributed database
+
+---
+
+### Database Partitioning - Query Routing
+
+This increases the complexity of the database and also adds some overhead, as now we also need to be able to route queries
+to the right shards and make sure that neither of the shards becomes to large in comparison to the others.
+
+---
+
+### Database Partitioning - Non-Relational Databases
+
+- First-class feature in all Non-Relational Databases because
+  - Records are decoupled from each other
+  - Storing the records on different computers is more natural and easier to implement
+
+---
+
+### Database Partitioning - Relational Databases
+
+- In Relational Databases, the support for partitioning depends on the implementation
+- Queries involving multiple records are common - Spreading them across multiple machines is challenging to implement
+- When choosing a Relational Database for a use case involving high volume of data, make sure that partitioning is well supported
+
+---
+
+### Infrastructure Partitioning
+
+Partitioning is not only used for databases but can also be used to **logically split our infrastructure**
+
+We can partition our compute instances using configuration files so that requests from paid customers to some machines
+and traffic from free users, go to other less powerful machines
+
+Alternatively, we can send traffic from mobile devices to one group of computers and send desktop traffic 
+to another group of computers running the same application
+
+This way if we have an outage, we can easily know what type of users are affected and decide how to act upon it.
+
+---
+
+### Final Notes
+
+- Indexing, Replication, and Partitioning are completely orthogonal to each other
+- We don't need to choose one over the other
+- All three of them are commonly used together in most real-life large-scale systems
+
+---
+
+### Summary
+
+- We learned about 3 techniques that we can apply to our database to make it much more robust in a large-scale system
+  - Indexing
+  - Replication
+  - Partitioning
+
+---
+
+
+
+
