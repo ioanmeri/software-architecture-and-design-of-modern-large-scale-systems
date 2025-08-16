@@ -3,6 +3,7 @@
 - [Relational Databases & ACID Transactions](#relational-databases--acid-transactions)
 - [Non-Relational Databases](#non-relational-databases)
 - [Techniques to Improve Performance, Availability & Scalability of Databases](#techniques-to-improve-performance-availability--scalability-of-databases)
+- [Brewer's CAP Theorem](#brewers-cap-theorem)
 
 ---
 
@@ -520,6 +521,133 @@ This way if we have an outage, we can easily know what type of users are affecte
 
 ---
 
+## Brewer's CAP Theorem
+
+### CAP Theorem
+
+> In the presence of a Network Partition, a distributed database cannot guarantee both Consistency and Availability and has to choose **only one** of them
+
+- Introduced by Professor Eric Brewer
+
+![Network communication](assets/images/10.png)
 
 
+For example, because of a network switch problem or some faulty network cables, Replica 1 and Replica 2 can still talk to each other. However, Replica 3 cannot talk to the rest of the replicas and it's now isolated from the rest of the database. This type of problem it's called a network partition.
+
+
+![Network partition](assets/images/11.png)
+
+- Service A update the counter maybe multiple times on Replica 1
+- Replica 3 has no way to get that update because of the network partition
+- When Replica B sends a read request to Replica 3 we have two options
+  - 1st favors availability over consistency
+    - Replica 3 response to Service B with each own value of the counter, knowing that it may be inconsistent with the rest of the database
+  - 2nd favors consistency over availability
+    - Replica 3 returns an error message to Service B, telling it to try again. Because at the moment, it cannot guarantee that the value it returns it's the most up to date
+
+---
+
+### CAP Theorem - Choices
+
+- Forces our database to a choice **only** when there is a network *partition*
+- Majority of the time we can easily provide both consistency and availability when
+  - There is no network partition
+  - Our replicas can freely communicate with each other
+
+---
+
+### CAP - Terminology
+
+- C = Consistency
+- A = Availability
+- P = Partition Tolerance
+
+---
+
+### CAP - Consistency
+
+> Every read request receives either the most recent write or an Error
+
+- A Consistent Database will return the value of the record that corresponds to the **most recent write operation**
+- All clients see the same value at the same time regardless of which instance of the database they talk to
+
+---
+
+### CAP - Availability
+
+> Every request receives a non-error response, without the guarantee that it contains the most recent write
+
+- Different clients may get different versions of a particular record
+- All requests return successfully with a **valid value**
+
+---
+
+### CAP - Partition Tolerance
+
+> The system continues to operate despite an arbitrary number of messages being lost or delayed by the network between different computers
+
+---
+
+### CAP Theorem - Interpretations
+
+- CAP Theorem tells us that when we either choose or configure a database we have to **drop one** of those three properties
+  - CA - no Partition Tolerance
+  - CP - no Availability
+  - AP - no Consistency
+
+---
+
+### CAP Theorem - Centralized Database
+
+- With a Centralized Database we can avoid network partitions
+- But with a high amount of data and query volume, it cannot scale
+- If we do choose to go the **distributed** route, we have to also choose **Partition Tolerance**
+- Thus, we have to choose to either drop Availability or Consistency
+
+---
+
+
+### CP - Online Store Example
+
+Consistency is much more important than availability. If we only have 1 item in stock, while 2 clients are trying to purchase this item. Both clients should have the same consistent picture of our inventory.
+
+---
+
+### AP - Social Media Example
+
+In a social media system, this counter can represent the number of likes or views for a particular post or video. It is completely acceptable to see a not so up to date number of likes for some duration of time.
+
+We would favor availability over consistency, to choose the distributed database.
+
+---
+
+### Consistency vs Availability
+
+- We **don't** have to choose entirely between
+  - 100% Availability. No Consistency
+  - 100% Consistency. No Availability
+
+
+When we configure a distributed database, we have a choice of how much availability and how much consistency we need or can tolerate
+
+---
+
+### CAP Theorem - Considerations
+
+- Example of making trade-offs when choosing the quality attributes for our system
+- It's important to make those trade-offs in the architectural design
+
+----
+
+### Summary
+
+- A very important concept for databases that operate on a high scale - CAP Theorem
+- We learnt the definitions of
+  - Consistency
+  - Availability
+  - Partition Tolerance
+- We formalized the CAP Theorem as a trade-off between Consistency and Availability in the presence of a network partitions
+- We talked about the considerations while choosing between Availability and Consistency in a distributed database
+
+---
 
