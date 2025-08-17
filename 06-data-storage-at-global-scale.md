@@ -4,6 +4,7 @@
 - [Non-Relational Databases](#non-relational-databases)
 - [Techniques to Improve Performance, Availability & Scalability of Databases](#techniques-to-improve-performance-availability--scalability-of-databases)
 - [Brewer's CAP Theorem](#brewers-cap-theorem)
+- [Scalable Unstructured Data Storage](#scalable-unstructured-data-storage)
 
 ---
 
@@ -651,3 +652,220 @@ When we configure a distributed database, we have a choice of how much availabil
 
 ---
 
+## Scalable Unstructured Data Storage
+
+### Unstructured Data
+
+- Data that doesn't follow a particular structure, schema, or model
+- For Binary files all we have is a "Blob" - Binary Large Object
+  - Audio
+  - Video
+  - Image
+  - PDF Documents
+---
+
+### Where to Store Unstructured Data?
+
+- Some databases allow storing *blobs*
+- Relational  / non-relational databases are **not optimized** for unstructed data
+- Databases have size limits on binary objects (~megabytes)
+
+---
+
+### Use cases for "Unstructured data"
+
+**1. Upload User Data**
+
+- Row uncompressed images
+- Video files
+- Audio files
+- Documents
+
+This data can be compressed, transcoded and moved to a different location.
+
+Can be shared or used for backup purposes such as in the case of File Hosting services
+
+---
+
+**2. Backup And Archiving**
+
+We can take periodic **snapshots** of the state of our Relational / NoSQL database.
+
+Those snapshots are organized in a proprietary Database specific binary formats
+
+We can treat those snapshots as unstructured data which can be stored elsewhere for
+- Disaster Recovery
+- Archiving Backups of transactions / emails / documents for auditing
+  - required by law and certain industries like financial institutions, healthcare
+
+---
+
+**3. Web Hosting**
+
+Media we need to display in our website, is unstructured data that we need to store somewhere, preferably
+with the ability to update frequently:
+
+- Images
+- Thumbnails
+- Digital Downloads
+
+---
+
+**4. Machine Learning and Big Data Analytics**
+
+- Surveillance Cameras
+- Internet of Things
+
+those binaries can be huge and contain measurements or images
+
+---
+
+### Unstructured Data Use Cases - Main Features
+
+- Data sets are very big
+  - system needs to scale to TB or PB
+- Each file / object is very big
+
+---
+
+### Distributed File System (DFS)
+
+A Distributed File System, provides us with the same abstraction as if we stored the data on our local hard drive. Except, instead of using a single storage device, **we have a network of storage devices**, connected to each other through the network.
+
+We can get
+- Replication
+- Strong / Eventual Consistency
+- Autohealing
+
+The main feature is that our binary objects are stored in a familiar way, as files within folders, in a tree-like structure.
+
+---
+
+### Benefits of a Distributed File System
+
+- No need for a special API
+- We can modify files easily
+  - Modify a document
+  - Append to the end of a log / video file
+- Very efficient and high performance IO operations
+
+---
+
+### Liminations of a Distributed File System
+
+- Number of files is limited
+- No easy access through web API (HTTP + REST)
+
+---
+
+### Object Store - Benefits
+
+- Scalable storage solution for storing unstructured data at internet scale
+  - **Linear scalability**
+- **No limit** to the number of objects we can store
+- Very **high limit** on a single object size (~5-10 Terabytes)
+- Provides an HTTP + **REST API**
+- Supports for **Versioning** out of the box
+  - can revert changes, undo delete operations
+
+---
+
+### Object Store Abstractions
+
+- Files are **not** stored in a directory hierarchy
+- They are stored in Buckets / Containers
+- Buckets do not have a limit on the number of objects we can store in them
+
+The main abstraction is an object with **Name / id and a value**, it also contains **Metadata** (additional properties for the object such as size, format and length)
+
+Each object also contains an **Access Control List (ACL)** for managing **permissions** of who can read or overwrite that object
+
+---
+
+### Cloud Based Object Stores - Storage Classes
+
+| Amazon S3 | GCP Storage | Azure Blob | Alibaba OSS |
+| -------- | ------------ | ---------- | ----------- |
+| S3 Standard | Standard | Hot tier | Standard |
+| Standard - Infrequent Access | Nearline | | IA |
+| Glacier Instant Retrieval | Coldline | Cool tier | Archive |
+| Glacier Deep Archive | Archive | Archive Tier | Cold Archive |
+
+High Availability / Performance ➡️ Limited Access / Low Performance
+
+Expensive ➡️ Cheap
+
+
+High Availability for frequent access like video or images:
+- Usually Uptime: 99.99%
+- Lowest Latency
+- Highest Throughput
+- Durability: 99.99999999%
+
+Medium tiers for data Backups - Not Very Frequently Used Data
+- Uptime: ~99.9%
+- Limited Performance
+- Limited Access
+
+Lowest tier - Long Term Archiving / Data is Rarely Used
+- Used by Law Firms
+- Healthcare companies
+- Financial Institutions
+
+---
+
+### Object Store - More Options
+
+- Sometimes **cloud-based** Object Stores are not an option because of
+  - **Budget** constrains
+  - **Legal** constrains
+  - **Performance** constraints
+- We can run **On-Premise** Object Store using
+  - **Open Source** Object Stores
+  - **Third-party** managed solutions
+
+
+---
+
+### Hybrid Cloud
+
+Same API
+- Cloud Storage
+- On-Premise / Privte Data Center
+
+---
+
+### Data Replication
+
+Typically object store, uses data replication under the hood. The ensures that losing physical storage will never result in actual loss of data
+
+
+---
+
+### Object Store - Drawbacks
+
+- Objects are immutable
+  - We can only replace an existing object with a new version
+  - Has negative performance implications
+- No easy file system-like access
+  - Access through an SDK or REST API
+- Lower IO performance comparing to a Distributed File System
+
+---
+
+### Summary
+
+- Learned about "unstructed data"
+- Common use-cases
+  - Storage of raw user-uploaded data
+  - Backup and Archiving
+  - Web Hosting
+  - ML and Big Data
+- Two storage solutions
+  - Distributed File System
+    - Scalable / Available version of the File System
+  - Object Store
+    - Not as performant as a DFS
+    - Best option for the web content
+
+---
