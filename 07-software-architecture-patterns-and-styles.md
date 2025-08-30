@@ -2,6 +2,7 @@
 
 - [Introduction to Software Architecture Patterns & Styles](#introduction-to-software-architecture-patterns--styles)
 - [Multi-Tier Architecture](#multi-tier-architecture)
+- [Microservices Architecture](#microservices-architecture)
 
 ---
 
@@ -305,8 +306,159 @@ This overhead comes from the restriction against bypassing tiers
 
 ---
 
+## Microservices Architecture
+
+### Microservices vs Three-Tier Architecture
+
+**Three-Tier / Monolithic Architecture**
+
+- Presentation Tier
+- Application Tier (Logic)
+- Data Tier
+
+Monolithic Application because Logic is concentrated in one single service.
+
+**Monolithic architecture - Advantages**
+- Perfect for Small teams
+- Small and non complex codebase
+
+**Monolithic architecture - Disadvantages**
+- As the size and complexity of our codebase grow, it becomes difficult to
+  - Troubleshoot
+  - Add new features
+  - Build
+  - Test
+  - Load in IDE
+- We have problems in organizational scalability because
+  - The more engineers we add to the team, the more code merge conflicts we get
+  - Our meetings become larger, longer, and less productive
+- Once we start seeing these problems, we should consider migrating our architecture towards *Microservices*
+
+---
 
 
+### Microservice Architecture
 
+> Microservices Architecture organizes our business logic as a collection of loosely coupled and independently deployed services
+
+> Each service is owned by a small team and has a narrow scope of responsibility
+
+**Microservices Architecture - Advantages**
+- **Smaller Codebase**
+  - Development becomes easier and faster
+  - Codebase loads instantaneously in our IDE
+  - Building and testing becomes easier and faster
+  - Troubleshooting / adding new features becomes easier
+  - New developers can become fully productive faster
+- **Better Performance and Horizontal Scalability**
+  - Instances become less CPU intensive and less memory-consuming
+  - Services can be scaled horizontally by adding more instances of low-end computers
+- **Better Organizational Scalability**
+  - Each service can be independently
+    - Developed
+    - Maintained
+    - Deployed by a separate small team
+  - Leads to high throughput from the entire organization
+  - Each team is autonomous to decide on
+    - Programming languages
+    - Frameworks
+    - Technologies
+    - Release schedule / process
+- **Better security (Falut Isolation)**
+  - If we have an issue in one of the services, it is easier to isolate it and mitigate the problem
+
+---
+
+### Microservices - Considerations
+
+**1. We don't get all these benefits out-of-the-box**
+
+- If we don't follow best practices we can fall into the *Big Ball of Mud*
+
+ **2. Overhead and challenges**
+
+ ---
+
+### Microservices - Organizational Decoupling
+
+- We need to make sure that the services are logically separated such that **every change**
+  - Can happen only in one service
+  - Would not involve multiple teams
+
+---
+
+### Microservices - Best Practises
+
+**1. Single Responsibility Principle (SRP)**
+
+- Each service needs to be responsible for only one
+  - Business capability
+  - Domain
+  - Resource
+  - Action
+
+
+Example 1: Online Dating Service
+
+API Gateway Service
+- Image Service
+- User Profile Service
+- Matching Service
+- Billing Service
+ 
+Example 2: Online Store Service
+
+API Gateway Service
+- Checkout Service
+  - Billing Service
+  - Tax Calculator Service
+  - Shipping Service
+  - + Product Inventory Service (Entity Oriented Services)
+- Product Search Service
+  - + Product Inventory Service
+
+Can also break the API Gateway:
+- Web API Gateway
+- Mobile API Gateway
+- Third Party API Gateway
+
+---
+
+**2. Separate Database Per Service**
+
+If two services share a single database, then every single schema or document structure change
+will require careful coordination between multiple teams
+
+If each service has it's own database, then the database becomes an implementation detail of each service
+and can be easily updated or replaced, completely transparently to the rest of the system
+
+**Separate Database Per Microservice**
+
+- Data has to be split in a way that each microservice can be *completely independent*
+- *Data duplication* is an expected overhead
+
+
+---
+
+### Final Notes
+
+- Following the best practices will allow us to succeed using Microservices
+- We get all those benefits **despite** the complexity and overhead only when we reach a certain *complexity* and *organizational* scale
+- It's best to start with the simple Monolithic approach first
+- When Monolithic Architecture stops working, we should consider Microservices
+
+---
+
+### Summary
+
+- A popular and useful architectural pattern and style - *Microservices Architecture*
+- Benefits of Microservices Architecture style that result in
+  - Higher organizational and operational scalability
+  - Better performance
+  - Faster development
+  - Security
+- Considerations and best practices to achieve all those benefits
+
+---
 
 
