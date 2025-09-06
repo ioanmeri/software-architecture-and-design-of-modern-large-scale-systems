@@ -548,3 +548,60 @@ Now because we decoupled the two services using the message broker:
 
 ---
 
+### Real Time Stream Analysis
+
+- Event-Driven Architecture allows us to
+  - Analyze streams of data
+  - Detect patterns
+  - Act upon data in real-time
+- Example
+  - Fraud Detection Service can detect suspicious activity in a user's account
+    - e.g. notice in the last hour, one transaction that happened in a remote location
+    - Would communicate with the Account Service which would freeze the user's account
+    - Would communicate with Notification Service which would alert the user
+
+---
+
+### Event Sourcing Pattern
+
+**Event Log Analysis**
+
+```
+Event 1 - Deposit $1000
+Event 2 - Withdraw $100
+Event 3 - Transfer $10 to Account 3476
+Event 4 - Deposit $520
+...
+Event 1004 - Transfer $520 to Account 12357
+Event 1005 - Withdraw $250
+```
+
+If we **replay all those transactions** from the beginning of time we can arrive at the **Current  Account Balance**, that is currently stored in Account's Service Database
+
+> We can store only the Events, which can be replayed whenever we need to know the current state and we eliminate the need for the Database
+
+Because events are immutable, we never modify them and we simply append new events to the log as they come
+
+**Statement Generation Service**
+
+By using this pattern, we can add another Service that can generate a statement or lookup any number of transactions that happened in the user's account,
+simply by using at the **Last N Events** in the log 
+
+
+**Append Only Operations - Fixing Fraudulent Operations**
+
+In Fraud Detection Service decided that one of those transactions was not approoved by the customer it can easily be fixed by adding another event into the log that compensates for it
+
+---
+
+### Snapshots
+
+Using the Event Sourcing Pattern, we can choose to store those events as long as we want and allow the user to look back at his transactions from 10 Years ago.
+
+We can also make our querying faster by adding **snapshot events e.g. every month that summarizes** everything that happened until that point of time
+
+---
+
+
+
+
