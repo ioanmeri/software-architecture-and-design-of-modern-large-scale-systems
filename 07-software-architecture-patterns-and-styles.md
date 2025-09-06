@@ -3,6 +3,7 @@
 - [Introduction to Software Architecture Patterns & Styles](#introduction-to-software-architecture-patterns--styles)
 - [Multi-Tier Architecture](#multi-tier-architecture)
 - [Microservices Architecture](#microservices-architecture)
+- [Event Driven Architecture](#event-driven-architecture)
 
 ---
 
@@ -461,4 +462,89 @@ and can be easily updated or replaced, completely transparently to the rest of t
 
 ---
 
+## Event Driven Architecture
+
+### Synchronous Communication in Microservices Architecture
+
+**Microsercice A needs to**
+
+- be aware of Microservice B
+- what API the Microservice B provides and how to call it
+- call Microservice B **synchronously** and wait for it's response
+
+Microservice A has a **dependency** on Microservice B
+
+---
+
+### Event-Driven Architecture - Events
+
+**Instead of**
+
+- Direct messages that issue commands
+- Requests that ask for data
+
+we have only **events**
+
+> An event is an immutable statement of a fact or a change
+
+---
+
+### Events - Examples
+
+- Fact Events
+  - User clicking on a digital ad
+  - Item being added to a shopping cart
+- Change Events
+  - Player of a video game
+  - IoT device (vacuum cleaner)
+
+---
+
+### Event-Driven Architecture - Components
+
+Event Emitter / Producer ➡️   🔳 🔳 🔳 Event Channel: Message Broker 🔳 🔳 🔳   ➡️ Consumer
+
+---
+
+### Decoupling of Microservices
+
+If Microservice A communicates with Microservice B by producing events, the dependency of Microservice A on Microservice B is removed.
+
+Microservice A doesn't need to know anything about the existence of Microservice B
+
+And once Microservice A produces the event, it doesn't need to wait for any response from any consumer.
+
+- We can decouple microservices effectively as
+  - Services don't need to know about each other's API
+  - All messages are exchanged asynchronously
+- Benefits
+  - Higher scalability
+  - More services can be added to the system without any changes
+
+---
+
+### Online Banking Service
+
+- Frontend Service
+  - provides the UI and takes in the user input
+    - e.g. money deposits, transfers between accounts
+- Account Service
+  - maintains and updates the balance between each user
+
+Now every action that the user performs on their account can be **events** that are produced by the frontend service
+
+The Account Service simply subscribes to those events
+
+![Online Banking Service](assets/images/12.jpg)
+
+Now because we decoupled the two services using the message broker:
+- we can easily add a mobile Notifications Service which subscribes to same channel
+  - can send Push Notifications to the users mobile device
+- we can add a fraud detection service
+- we can add another Producer service that can integrate with other 3rd party services
+  - e.g. utility companies that charge our client automatically for gas, electricity or water
+  - payroll services to perform direct deposits to the client's account on behalf of the client's employer
+
+
+---
 
