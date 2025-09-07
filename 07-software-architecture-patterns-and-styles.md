@@ -602,6 +602,99 @@ We can also make our querying faster by adding **snapshot events e.g. every mont
 
 ---
 
+### CQRS
 
+- C = Command
+- Q = Query
+- R = Responsibility
+- S = Segregation
+
+It solves two problems
+- Optimizing a database with high load of Read and Update operations
+- Joining multiple tables located in separate databases that belong to different microservices
+
+---
+
+### CQRS - Optimizing a database with high load of Read and Update operations
+
+- Concurrent operations to the same records or tables contend with each other, making *all* operations slow
+- We can optimize a distributed database only for *one type* of operation at the expense of the other
+  - Read-intensive workload - Compromise on slower writes
+  - Write-intensive workload - Compromise on performance of read operations
+  - Both operations equally frequent - **Problem!**
+
+---
+
+### CQRS - Update and Read Operations Separation
+
+> The CQRS architectural pattern allows us to separate update and read operations into **separate databases**
+
+- In this case, Service A would take the Update Operation - Write Optimized DB
+
+![CQRS Update database](assets/images/13.jpg)
+
+- Additionally, every time an update operation is performed, it also publishes an event into a message broker
+- Meanwhile, Service B subscribes to those update events and apply all those changes in the Read Optimized DB
+
+![CQRS Update database](assets/images/14.jpg)
+
+- Now, all Update and Read Operations can go to two different services
+- Data in each service is stored in an optimized way for read / write
+
+---
+
+### CQRS - Joining multiple tables located in separate databases that belong to different microservices
+
+If it was a Relational Database in a Monolithic Application, we could easily combine records from multiple tables by simply using the SQL `JOIN` operation
+
+Once we migrate to Microservices architecture and follow the best practice of having a **separate database for each Microservice**, JOIN operations are harder, we would need to:
+- send a request to each service separately, which is a lot slower
+- combine this data programmatically
+  - now we potentially have different types of databases, some of them may be not relational
+
+---
+ 
+### CQRS - Solution: Joining multiple tables located in separate databases
+
+- Every time there is a change in data, stored in Service A or Service B database
+- Those services would also publish those changes as events
+- To which Service C subscribes
+- Meanwhile, Service C stores a **Materialized View** of the Joined - ready to query data - from both Service A and Service B
+  - in each own read-only database
+- Whenever we need to get a joined view, we need to **send a request to Service C** only
+
+![CQRS Joining Multiple tables](assets/images/15.jpg)
+
+
+---
+
+### CQRS - Online Store Real Life Example
+
+- Product Service has each own database
+  - products inventory keeps changing as people purchase products
+- Reviews Service has each own database
+  - reviews are coming to our system constantly
+- CQRS: Add Products & Search Service with each own database
+  - The Service would also Subscribe to updates to this data from Review & Product Service
+  - Combine Read Products Information and Read Reviews very quickly and frequently
+
+![CQRS Joining Multiple tables](assets/images/16.jpg)
+
+---
+
+### Summary
+
+- Learned about Event-Driven Architecture
+- Benefits
+  - Decoupling microservices - higher horizontal and organizational scalability
+  - Analyze and respond to large streams of data in real time
+- Architectural patterns
+  - *Event Sourcing*
+    - Allowed us to store and audit the current state of a business entity by only appending immutable events and replaying them when we need to
+  - *CQRS*
+    - Optimize our database for both update and read operations, by splitting the operations to different services
+    - Allowed us to quickly and efficiently join data from different services and databases
+
+---
 
 
