@@ -1,5 +1,10 @@
 # Section 8: Strategies for Processing Infinite Streams of Events
 
+- [Introduction to Event-Stream Processing and Tumbling Window Strategy](#introduction-to-event-stream-processing-and-tumbling-window-strategy)
+- [Hopping Window Event-Stream Processing Strategy](#hopping-window-event-stream-processing-strategy)
+
+---
+
 ## Introduction to Event-Stream Processing and Tumbling Window Strategy
 
 In many cases, to get meaningful insights, we need to aggregate and analyze a series of events.
@@ -121,6 +126,126 @@ At the end of each window, we group sales by seller and produce the total revenu
   - e.g. trend will not be discovered if there are spikes around the window boundary
 
 ---
+
+## Hopping Window Event-Stream Processing Strategy
+
+### Tumbling Window - Quick Reminder
+
+- Devides time into
+  - Fixed-size
+  - Back-to-back windows
+- Disadvantages
+  - Dependency of the frequency of results on the size of the window
+
+**Tumbling Window - Short Window, Hight Frequency**
+
+If the volume of events is low or sporadic, we will have a lot of windows with nothing / very little data to aggregate
+
+**Tumbling Window - Long Window, Low Frequency**
+
+The results of an aggregation, will be produced by the consumer of the events, only once an hour / once a day
+
+---
+
+### Hopping Window
+
+- Each window has a fixed-time interval
+- Hopping windows overlap with each other
+- Separated by a fixed hop called: **Advance Interval**
+- Advance Interval can be
+  - smaller that the window duration
+  - equal to the window duration
+  - larger than the window duration
+
+If the Advance Interval is equal to the Window duration then it's the same as Tumbling Window
+
+---
+
+### Hopping Window - Smaller Than Window Duration
+
+When Window 1 is closed, all the events captured within it's time boundaries, will be analyzed and the consumer application will produce
+- a sum
+- an average
+- some other single metric or summary
+
+one advance interval later, the second window will be closed and consumer application will produce another result
+
+![Hopping window](assets/images/18.png)
+
+We essentially get **continuous monitoring** or trend analysis with much more **frequent updates**
+
+---
+
+### Hopping window vs Tumbling Window
+
+If we want to increase the window size and analyze more events in every window, the frequency of publishing the events doesn't change.
+
+Frequency it's completely independent of the window size.
+
+---
+
+### Hopping window - Events in Different Windows
+
+The same events can be part of several windows. 
+
+The same data received by the event consumer, will be processed as part of multiple aggregations
+
+---
+
+### Hopping Window - Use Cases
+
+- Near real-time analytics
+  - Stock trading
+    - Average
+    - Median
+    - Maximum
+    - Minimum price of a stock / asset
+      - Windows size: 1 minute / 1 hour
+      - Advance interval: 1 second
+  - Error Logs Analysis
+    - Window size: 1 hour
+    - Advance interval: 1 minute
+    - We can get an update on our error rate, for the last hour every minute
+
+---
+
+### Hopping Window - Pros
+
+- Produce results of processing events more frequently
+- Great for UIs, and dashboards monitored by humans
+- Allows us to respond to changes / insights faster and sooner
+
+---
+
+### Hopping Window - Cons
+
+- The events are aggregated by the "consumer" in memory
+- Instead of one window at a time we have
+  - Multiple windows
+  - More events in flight
+    - Increases the memory footprint of the consumer microservice
+- More frequent aggregation of events
+  - More CPU resources
+  - More network resources
+
+---
+
+### Hopping Window - Temperature Measurements
+
+If we set the advance interval to be larger than the window size, we simply revert to tumbling window strategy.
+
+Now, we have **gaps** between the windows.
+
+Useful when the volume of events is very large but doesn't have high variability
+- e.g. sensor data that doesn't change to often / don't need to process all of it
+
+This way we basically sample those events with fixed windows and discard the data in between
+
+---
+
+
+
+
 
 
 
