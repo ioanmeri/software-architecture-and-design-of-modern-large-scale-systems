@@ -2,6 +2,7 @@
 
 - [Introduction to Event-Stream Processing and Tumbling Window Strategy](#introduction-to-event-stream-processing-and-tumbling-window-strategy)
 - [Hopping Window Event-Stream Processing Strategy](#hopping-window-event-stream-processing-strategy)
+- [Sliding Window Event-Stream Processing Strategy](#sliding-window-event-stream-processing-strategy)
 
 ---
 
@@ -243,7 +244,68 @@ This way we basically sample those events with fixed windows and discard the dat
 
 ---
 
+## Sliding Window Event-Stream Processing Strategy
 
+### Sliding Window - Motivation
+
+**Fraud Detections Service at a Financial System / Bank**
+
+Rule: Alert if Same Card Used > 10 Times per minute
+- Trigger an alert to freeze account
+- Send a Notification to the owner of the credit card
+
+Both Tumbling and Hoping window won't detect correctly the fraudulant activity 
+
+---
+
+### Sliding Window - Strategy
+
+- Each window has a fixed duration
+- Every new event will start a new fixed size window
+- The consecutive interval between windows it's dynamic
+  - align to events instead of points fixed in time
+
+This strategy is great for events that arrive at Irregular Intervals
+
+For any active window, as soon as it's duration passes, the results are calculated / published and the window is closed
+
+![Sliding window](assets/images/19.png)
+
+---
+
+### Sliding Window Strategy - Example
+
+**API Rate Limiting / Throttling**
+
+Every time a user sends a request to our system or a third party application makes an API call to our system
+- we can emit an event to a message broker
+- those events can be processed by a rate limiting microservice
+- microservice aggregates the events by origin
+- if each user exceeds it's quata it blocks the origin
+- Responds with an HTTP 429 - Too Many Requests
+  - prevent DDoS
+  - make sure 3rd party client applications get an equal response time
+
+---
+
+### Sliding Window - Pros
+
+- Excellent strategy for
+  - Real-time monitoring
+  - Pattern detection
+- Sliding window vs Hopping Window
+  - Advance interval is flexible
+  - Advance interval is always as small as possible
+
+---
+
+### Sliding Window - Cons
+
+- Processing and memory costs are higher
+  - Especially if the volume of events is very high
+  - Number of windows is directly correlated to the number of events
+
+---
 
 
 
