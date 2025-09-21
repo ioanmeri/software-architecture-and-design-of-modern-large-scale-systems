@@ -3,6 +3,7 @@
 - [Introduction to Event-Stream Processing and Tumbling Window Strategy](#introduction-to-event-stream-processing-and-tumbling-window-strategy)
 - [Hopping Window Event-Stream Processing Strategy](#hopping-window-event-stream-processing-strategy)
 - [Sliding Window Event-Stream Processing Strategy](#sliding-window-event-stream-processing-strategy)
+- [Session Window Event-Stream Processing Strategy](#session-window-event-stream-processing-strategy)
 
 ---
 
@@ -307,6 +308,111 @@ Every time a user sends a request to our system or a third party application mak
 
 ---
 
+## Session Window Event-Stream Processing Strategy
+
+### Session Window Strategy - Motivation
+
+**Tumbling Window**
+- Fixed window size
+- Back-to-back
+
+**Hopping Window**
+-  Fixed window size
+-  Separated by an "advance interval"
+
+**Sliding Window**
+- Fixed window size
+- Start with every new event
+
+
+In certain scenarios, we need to analyze sequences of events that may **span a variable duration**, typically also followed of a period of inactivity.
+
+---
+
+### Session Window Strategy - Example
+
+**User Behavior Analytics for a Website**
+
+We need to track each user's activity throughout an entire session.
+
+- The session of each user is variable, we can use a dynamic window
+- Each session window starts with a particular type of event e.g. login
+- When we reach some inactivity threshold, the session window is closed
+- Results are summarized, maybe categorized as page views, scroll / search / purchases
+  - Saved in a DB
+  - Published to an analytics Dashboard
+
+The duration of the window is going to determined based on the time of the **first event** and the **last event** of the session.
+
+![Session window](assets/images/20.png)
+
+---
+
+### Session Window Strategy - IoT
+
+**Vacuum cleaner**
+
+The duration of each vacuuming session vary greatly. Session window it's the best choice to collect data about Temperature Events, Dust Collected Events.
+
+**Navigation App-Route Optimization**
+
+Data collected by smart phone drivers can be used to optimize the route of all the other drivers, that take the same or similar route.
+- Send data about Location / Speed Updates to a microservice in the cloud
+- Location data is processed to continiously recalculate the best route
+  - congestion areas to optimize the trip of other drivers
+- Each driving session is part of a dynamic window
+  - starts as soon as the app detect movement
+  - stops when the location update events contain the same location for some time / indicating inactivity
+
+---
+
+### Session Window - Important Note
+
+- Session window is **not global**
+- Window is created per
+  - User
+  - Key
+  - Device Id
+  - etc
+
+We can have overlapping session windows
+
+---
+
+### Session Windnow Strategy - Pros
+
+- Excellent strategy for real-time analytics of users using:
+  - App
+  - Service
+- Dynamic window size
+  - Allows grouping events based on activity
+- Each event belongs to only one window
+  - No waste of computations
+
+---
+
+### Session Window Strategy - Cons
+
+- Challenge
+  - Defining the **inactivity threshold / period**
+  - **Typical situation**: A person just stops using the app / browser
+  - We can't know if the activity ended or not
+    - User may just get **temporarily** distracted
+    - User may have gone to **get their credit** card
+    - User may have switched their focus to **another activity**
+  - Threshold too short: Premature End of Session Window
+  - Threshold too long: Session Window stays open much longer which consumes memory
+- One Window per
+  - User
+  - Origin
+  - Event key
+  - Many Session Windows
+  - One way to solve this problem is to run many instances - Scalability
+    - Of streaming processing microservice / application
+    - Dedicate one consumer instance to a set of keys corresponding to different users / event origins
+    - We adjust the number up or down based on consumer memory and CPU utilization
+
+---
 
 
 
