@@ -4,6 +4,7 @@
 - [Hopping Window Event-Stream Processing Strategy](#hopping-window-event-stream-processing-strategy)
 - [Sliding Window Event-Stream Processing Strategy](#sliding-window-event-stream-processing-strategy)
 - [Session Window Event-Stream Processing Strategy](#session-window-event-stream-processing-strategy)
+- [Time in Stream Processing and Handling Late Arrival of Events](#time-in-stream-processing-and-handling-late-arrival-of-events)
 
 ---
 
@@ -414,7 +415,138 @@ We can have overlapping session windows
 
 ---
 
+## Time in Stream Processing and Handling Late Arrival of Events
+
+For every event, we can define three distinct timestamps:
+
+- Event Time
+  - Time when the event happened (stored inside the record)
+- Application Time / Arrival Time
+  - Time when the event is consumed by the application / consumer microservice
+- Processing Time
+  - Time when the event is read / parsed / processed by the consumer microservice
+
+Which timestamp should I use when deciding how to match events into windows?
+- Depends on the use case
+
+---
+
+###  When to Use Arrival Time
+
+- We **don't care** about "when the event actually happened"
+- Need to act in **real-time**
+- We **don't know / trust** the event time
+
+**Example 1**: Credit Card Processing System - Rate Limiting
+
+We are using sliding window which starts a new window for every incoming event when it arrives in our consumer
+
+In this case it's better to ignore the actual event time
+
+**Example 2**: Social media app that users download & install in their mobile phones
+
+Users leave likes or comments. The actual timestamp is not critical.
+- The clocks on the users devices may be incorrect or out of sync with our clock
+- User may lose internet connection
+- When low on battery, network requests can be delayed and batched for higher efficiency
 
 
+---
+
+### When to Use Event Time
+
+- We care about when the event happened for
+  - Correlation
+  - Ordering
+
+**Example 1**: Analyzing real time trends in the stock market
+
+We group events into one minute window with 1 second advance intervals with the purpose of showing a moving average of a price of a particular financial asset
+
+At different times we may have jitter due to garbage collection of our application or buffering delays in our message broker
+- our event arrival time may vary greatly over time
+- we care about the actual time of each trade
+
+**Exampe 2**: Analyzing a sequence of events coming from the users mobile devices for tracking / analytics
+
+- Language learning app that runs on our users devices
+- We want to monitor and analyze how each user uses the app to optimize their learning experience
+- Can track different events
+  - User Logged In
+  - Started a Lesson
+  - Complete a Lesson
+  - Take a Quiz
+
+Due to connection issues, or increase energy efficiency, the events may be stored on the device and then send in batches sometimes much later than the event actaully happened
+
+We do care about the actual time and sequence in which the events happened on the users device
+
+e.g. we can use a session window and get real insights about our users behavior
+
+
+---
+
+### Handling Late Arrival of Events
+
+E.g. a tumbling window has been already processed and it's results published downstream
+
+- The first option is to simply discard it
+- The second option is to add a grace period
+  - 15 seconds before actually performing the aggregation of events / publishing the results
+
+Any late event with an event time that falls within the boundaries of this old window, that arrives within the grace period, will still be added to this window
+
+**Option 2 - Grace Period**
+
+- Advantages
+  - Give late events antoher chance
+- Disadvantages / Challenges
+  - Finding the right grace period
+
+---
+
+### Handling Late Arrival of Events - Option 3 (Watermarking)
+
+We keep track of the maximum event time we have seen so far
+
+We check every:
+
+```
+Max-Event-Time - Watermark < Old Window Upper-Bound (1m)
+```
+
+As long as this condition holds, the window will remain open and new events will be added to it
+
+When the difference is greater than the upper bound of the old window, we close that old window and then aggregate the events and publish the results. This new event will go to the new window.
+
+![Handling late arrival - Watermarking](assets/images/21.png)
+
+This is the point of having this watermarked value. Allows delayed arrival of events that belong to an old window even though a new window is already opened
+
+![Handling late arrival - Watermarking](assets/images/22.png)
+
+**Option 3 - Watermarking**
+
+- Advantages
+  - Watermark is not tied to the arrival time of events
+- Disadvantages / Challenges
+  - Delay the aggregation / closing of windows without the ability to estimate it
+
+---
+
+### Summary
+
+- Window Strategies
+  - Tumbling Window
+  - Hopping Window
+  - Sliding Window
+  - Session Window
+- Difference between
+  - Event-Time
+  - Arrival Time
+  - Processing Time
+- Handling late arrival of events
+
+---
 
 
