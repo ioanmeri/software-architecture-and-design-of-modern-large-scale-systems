@@ -2,6 +2,7 @@
 
 - [Introduction to Big Data](#introduction-to-big-data)
 - [Big Data Processing Strategies](#big-data-processing-strategies)
+- [Lambda Architecture](#lambda-architecture)
 
 ---
 
@@ -273,5 +274,188 @@ After that record is processed, the processing job updates the database that pro
 
 ---
 
-  
+## Lambda Architecture  
 
+### Batch Processing Strategy
+
+**Benefits**
+
+- Since the job operates on entire dataset, we get
+  - Deep insight into historic data
+  - Ability to fuse data coming from different sources
+  - Ability to build predicton models
+
+**Drawbacks**
+
+- We have to settle for a high delay between the incoming data and the time to query it from the database
+
+---
+
+### Real-Time Processing Strategy
+
+**Benefits**
+
+- Gives us visibility into recent data
+- Allows us to query and respond to data as it comes into our system
+
+**Drawbacks**
+
+- For each use case, we have to choose and sacrifice either
+  - Fast response time
+  - Deep analysis into historic data
+
+---
+
+### Batch Processing vs Real-Time Processing
+
+- There are use cases that are perfect for
+  - Batch Processing - Delay is not important
+  - Real-Time Processing - Does not need any deep analysis that involves historic data
+- In many cases, we need the properties of both strategies
+
+---
+
+### Example 1 - Log / Metrics Analysis Service
+
+System that aggregates and analyses logs and performance metrics from hundreds / thousands of production servers
+- Real-Time Processing use case
+
+---
+
+### Example 2 - Anomaly Detection Example
+
+If we want to implement automatic Anomaly Detection, this type of system would have to have access to both 
+- Real Time Data
+- Historic Data
+
+---
+
+### Example 3 - Ride Sharing Service
+
+In this case, the events we are getting are both locations from
+- Drivers
+- Riders
+
+to provide the service, we need to know where each client is **located in real-time**
+
+We also want to look **historic data**
+- Busy Times
+- Locations with too many / few Drivers
+
+we can share this information with our drivers and make sure that at any given moment we have enough drivers in each location
+- Share Insights
+
+to provide them with steady income
+
+---
+
+### Lambda Architecture
+
+- *Nathan Marz* came up with the Lambda Architecture term based on his experience working on big data
+- It attempts to find a balance between
+  - High Fault Tolerance and comprehensive analysis of data (Batch Processing)
+  - Low Latency (Real-Time Processing)
+
+----
+
+
+### Lambda Architecture - Layers
+
+1. Batch Layer
+2. Speed Layer
+3. Serving Layer
+
+Data that comes into our system is dispatched both into the Batch Layer and the Speed Layer simultaneously
+
+---
+
+### Batch Layer - Purposes
+
+1. Manage dataset and be a system of records
+2. Precompute Batch Views
+
+**Batch layer**
+
+- aims at perfect accuracy
+- operates on entire dataset
+
+---
+
+### Speed Layer
+
+- Compensates for the high latency in the Batch Layer
+- Operates only on the most recent data
+- Doesn't attempt to
+  - Provide a complete view
+  - Make any complex data corrections
+
+---
+
+### Serving Layer
+
+The serving layer's purpose is to respond to ad hoc queries and merge the data from both:
+
+- Batch Views
+- Real Time Views
+
+This way, any query can take all the data that we have into account
+- Historic Data
+- Recent Data
+
+
+![Lambda Architecture](assets/images/25.png)
+
+---
+
+### Example Ad-Tech Industry 
+
+The Digital Ads Service with 
+- advertisers in one end
+  - companies that sell tickets to Concerts
+  - can be physical Online Stores
+- content producers in the other end
+  - Blogers
+  - News Agencies
+
+The way the content producers make their money is by living empty slots on their websites where advertisers can place their ads.
+Any time a user either sees or clicks on an add, the advertiser pays the content produces a small fee.
+
+Our system acts as a middleman
+- provides advertisers with websites
+- provides content produces with advertisers that are willing to provide ads and pay their money
+
+
+![Digital Ads Service](assets/images/26.png)
+
+The synchronous part of the system is
+
+![Digital Ads Service](assets/images/27.png)
+
+Events are going to be processed by batch layer and speed layer
+
+- User Saw Ad
+- User Clicks Ad
+- User Makes Purchase
+
+**Real-Time Views**
+
+An advertiser can send us a query asking about the number of users **currently viewing their ads** across all different websites
+
+**Batch Views**
+
+An advertiser can send us a query asking how many ads were shown to users **in the last 24 hours**
+
+How much money they need to spend on advertising before a user makes a purchase: ROI
+- rely on deep analytics and data fusion from the batch layer
+
+---
+
+### Summary
+
+- Lambda Architecture
+  - Important architecture for Big Data processing
+  - Hybrid between Batch Processing and Real-Time Processing model
+  - Allows to enjoy the benefits of both worlds for use cases when choosing only one is not an option
+- We explored a real-life, practical scenario to satisfy a wide range of queries
+
+---
