@@ -1,6 +1,7 @@
 # Section 10: Software Architecture & System Design Practice
 
 - [Design a Highly Scalable Discussion Forum 1 - Requirements & API](#design-a-highly-scalable-discussion-forum-1---requirements--api)
+- [Design a Highly Scalable Discussion Forum 2 - Functional Architecture Diagram](#design-a-highly-scalable-discussion-forum-2---functional-architecture-diagram)
 
 ---
 
@@ -238,8 +239,53 @@ When user scrolls at the end of the page, the front end code sends a request for
 
 ---
 
+## Design a Highly Scalable Discussion Forum 2 - Functional Architecture Diagram
 
 
+### Functional Requirements
+
+1. A user can **signup** and **login** to post, vote, or comment
+2. A user should be able to create a **new post** that contains a
+   - Title
+   - Topic tags
+   - Body (text or uploaded images)
+3. A user should be able to **comment** on any existing post
+4. **Comments** are ordered **chronologically** as a **flat list**
+5. User can to **delete** their own **post** or **comment**
+6. **Logged-in** user can **upvote/downvote** an existing **post/comment**
+7. Present the top **most popular posts** in the **last 24 hours** on the homepage
+  - Popularity = Upvotes - Downvotes
+
+---
+
+### Architectural Diagram
 
 
+![Architectural Diagram](assets/images/28.png)
+
+Using CQRS pattern, we pull data from both microservices by a new microservice ➡️ Ranking Service
+
+This Service will have a dedicated optimized read database to serve the posts in a sorted and ready to be served way.
+
+---
+
+### Present popular posts in the last 24 hours - Observations
+
+- Most Posts are not active in the last 24 hours. We only need to sort a small number of posts
+- Recalculating and ranking the posts continuously is expensive
+- No strict requirement to keep the list of posts, sorted at all times
+
+**Batch Processing**
+
+Combining the Batch Processing and the CQRS pattern, the ranking service will run maybe once in 10 / 30 / 60 minutes.
+
+Everytime it runs it will request the voting service to give it all the new votes that happened in the last 24 hours.
+
+The ranking service it will then sum up the upvotes and downvotes per post and sort the posts by popularity.
+
+The it will pull the content of those posts from the Posts & Comments Service and store the sorted list of posts in each database.
+
+Whenever a user opens the website that request will go to the ranking service and send back the 20 most popular posts and paginate for the rest.
+
+---
 
