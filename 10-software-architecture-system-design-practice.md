@@ -381,6 +381,91 @@ At peak times, when a small group of posts is viewed by many users simultaneousl
 
 This will also reduce the response time for our users, and goes hand in hand with our decision to prioratize availability over consistency.
 
+![CDN and caching](assets/images/32.png)
+
+
+---
+
+### Performance - Database Indexing
+
+**Posts & Comments Service**
+
+We can add an **index** on the `post_id` which will make searching for a particular post in a constant time instead of scanning through all of our collection of posts.
+
+We can use the same compound index we created for sharding the comments using the `post_id` and `comment_id`.
+- requesting a batch of comments for a given post will also be much faster
+
+**Votes Service**
+
+When we show a post or a command on the UI, we want to show the overall number of upvotes
+- Show total upvotes / downvotes
+  - for each post
+  - for each comment
+
+We can introduce **a message broker** between the voting service and the post and comment service
+- we can add **downvotes** and **upvotes** in posts and comments collections
+
+Any time a user downvotes or upvotes a post, the voting service will add that entry to each own database
+- and publish it as an event to the posts and comments service
+- post and comments service can consume this event, and update the total number of upvotes / downvotes
+- helps if we have a short but sudden traffic spike
+  - users will not get the most up to date value for the total number of upvotes / downvotes (availability over consistency)
+
+---
+
+### Fault Tolerance / High Availability
+
+To ensure we don't lose any data we can introduce **database replication**, if a database instance or database shard crashes.
+
+Similarly, every message broker, data store and microservice is replicated, adding to our overall system tolerance
+
+
+![Fault Tolerance](assets/images/34.png)
+
+In addition, we can run our system across multiple data centers in different geographical locations and utilize a **Global Load Balancinig Service**
+
+This way we can always fallover to another region, if there is a natural disaster in one of those regions.
+
+This also improves our performance as our system gets physically closer to our users on different continents
+
+![Multi Data Center Deployment](assets/images/35.png)
+
+---
+
+### Availability + Partition Tolerance (AP over CP)
+
+We prioritize availability over consistency when it comes to data, so our database is configured to be available and partition tolerant and that's in addition to all the caching and other optimizations we have already made in our system.
+
+---
+
+### Durability
+
+We get durability for free, by using database replication and periodic backups to ensure we don't lose any data
+
+---
+
+### Summary
+
+- Scalability
+  - Load Balancing
+  - Database Sharding
+  - API Gateway
+- Performance
+  - CDN
+  - Caching
+  - Database Indexing
+- High Availability
+  - Database Replication
+  - Redundancy
+  - Message Broker
+  - Multi Data Center Deployment
+- Availability over Consistency
+  - Choosing / Configuring AP Databases
+- Durability
+  - Replication and Backups
+
+---
+
 
 
 
