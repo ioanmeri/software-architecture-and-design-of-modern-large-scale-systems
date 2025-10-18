@@ -2,6 +2,7 @@
 
 - [Design a Highly Scalable Discussion Forum 1 - Requirements & API](#design-a-highly-scalable-discussion-forum-1---requirements--api)
 - [Design a Highly Scalable Discussion Forum 2 - Functional Architecture Diagram](#design-a-highly-scalable-discussion-forum-2---functional-architecture-diagram)
+- [Design a Highly Scalable Discussion Forum 3 - Final Software Architecture](#design-a-highly-scalable-discussion-forum-3---final-software-architecture)
 
 ---
 
@@ -10,7 +11,7 @@
 ### System Design Step-By-Step Process
 
 1. **Ask Questions** to capture:
-   - a. *Funcitonal* Requirements
+   - a. *Functional* Requirements
    - b. *Non-Functional* Requirements
    - c. System *Constraints*
 2. Define the System's API
@@ -283,9 +284,106 @@ Everytime it runs it will request the voting service to give it all the new vote
 
 The ranking service it will then sum up the upvotes and downvotes per post and sort the posts by popularity.
 
-The it will pull the content of those posts from the Posts & Comments Service and store the sorted list of posts in each database.
+Then it will pull the content of those posts from the Posts & Comments Service and store the sorted list of posts in each database.
 
 Whenever a user opens the website that request will go to the ranking service and send back the 20 most popular posts and paginate for the rest.
 
 ---
+
+## Design a Highly Scalable Discussion Forum 3 - Final Software Architecture
+
+### Non - Functional Requirements
+
+1. **Scalability** (millions of daily users)
+2. **Performance** (Less than 500 ms Response Time 99p)
+3. **Fault Tolerance / High Availability** (99.9%)
+4. **Availability + Partition Tolerance** (AP over CP)
+5. **Durability**
+
+---
+
+### Scalability
+
+We can place a **load balancer**, in front of 
+- the web app service
+- each one of the other services
+
+Then we can place an **API Gateway**, to decouple the front end code from the system's internal structure
+- it will increase organizational scalability
+
+![Load Balancer](assets/images/29_2.png)
+
+
+On Posts & Comments Database side, as we store more posts and comments, our db instance may run out of space.
+It also may not be able to handle the traffic from so many users
+
+![Sharding](assets/images/30.png)
+
+The solutions is to **sharding our posts and comments collection** across different database shards
+- shard the posts by applying a hash function
+  - `Hash(post_id) -> Shard(i)`
+  - should evenly distribute the posts across different shards
+- the comments should be in the same instances with the posts
+  - if we hash their ids it will result in an inefficient broadcast operation to all our database shards
+  - should hash them again by `post_id` to have them on the same shard
+  - `Hash(post_id) -> Shard(i)`
+  - Problem: If one popular post grows to so many comments that they cannot fit on a single shard, we won't be able to split them
+    - also performance bottleneck, because to many operations will go to the same shard
+    - Solution: can shard on a compound index `(post_id, comment_id)`
+    - Should also use a **Range Sharding Strategy** instead of hash function
+
+
+---
+
+### Coumpound Index + Range Shard Strategy
+
+We can think of the Compund Index as a separate data structure that sorts our data first
+- by the first key: post_id
+- and then by the second key: comment_id
+
+This way, using a range sharding strategy, the database splits the data into ranges and distributes them across different shards
+
+![Sharding Range Shard Strategy](assets/images/31.png)
+
+However, if one of the posts gets too many comments, the database can still split those ranges and put comments of the same post, on different shards
+
+This way we get a good balance between scalability and performance, since each request for a list of consecutive comments for a given post, will likely result to a call to **one shard** or maybe two shards at the worst case
+
+---
+
+### Performance
+
+Potential performance bottleneck
+- Image Blob Store
+- Static HTML pages
+
+**Images**
+
+Every time a user loads a post of a news feed with the most popular posts, we need to load images from our system
+- utilize a global network of **CDN servers**
+- using a PULL model with a very long TTL
+- images will be distributed among the CDN edge servers
+
+This reduces the traffic load on our system and also reduces the page load time for the users.
+
+**Static HTML pages**
+
+We can also offload them to a CDN which will 
+
+- reduce the load of our web app service
+- reduce the time of all our pages load on user's device
+
+**API Gateway Level**
+
+We can also introduce **caching on API Gateway level**. 
+
+At peak times, when a small group of posts is viewed by many users simultaneously, we can store those posts in a Cache and update it every few minutes.
+
+This will also reduce the response time for our users, and goes hand in hand with our decision to prioratize availability over consistency.
+
+
+
+
+
+
 
