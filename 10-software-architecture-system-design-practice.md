@@ -3,6 +3,7 @@
 - [Design a Highly Scalable Discussion Forum 1 - Requirements & API](#design-a-highly-scalable-discussion-forum-1---requirements--api)
 - [Design a Highly Scalable Discussion Forum 2 - Functional Architecture Diagram](#design-a-highly-scalable-discussion-forum-2---functional-architecture-diagram)
 - [Design a Highly Scalable Discussion Forum 3 - Final Software Architecture](#design-a-highly-scalable-discussion-forum-3---final-software-architecture)
+- [Design an E-commerce Marketplace Platform 1 - Requirements & Sequence Diagram](#design-a-highly-scalable-discussion-forum-1---requirements--api)
 
 ---
 
@@ -466,9 +467,159 @@ We get durability for free, by using database replication and periodic backups t
 
 ---
 
+## Design an E-commerce Marketplace Platform 1 - Requirements & Sequence Diagram
 
+### Design Problem - High Level Overview
 
+- Highly Scalable E-Commerce Marketplace (like Amazon.com, AliExpress, Ebay, Rakuten etc..)
+  - Merchants can
+    - **Upload** products
+    - **Sell** products
+   - Users can
+     - **Browse** products
+     - **Search** for products
+     - **Buy** products
 
+---
 
+### Important Obeservation
+
+- We have 2 major actors in the System
+  - Merchants
+  - Users / buyers
+
+we need to clarify the functionality for both of them separately 
+
+---
+
+### System Design Initial Questions - Merchants
+
+- Examples
+  - What type of products are we selling? Physical or digital?
+  - What product information does a merchant provide?
+  - What data do we need to provide the merchant?
+  - What operations can a marchant perform?
+  - ...
+
+---
+
+### System Design Initial Questions - Users / Buyers
+
+- Examples
+  - Can anyone browse / purchase or registration is required?
+  - Are Product Reviews / Ratings in scope?
+  - Search capabilities?
+  - Do we need to design checkout / payment / delivery?
+  - What UI do we offer? Browser / Mobile?
+
+---
+
+### Functional Requirements - "Product" Requirements
+
+- *Physical* product (with limited inventory)
+- Each product contains
+  - Title
+  - Description
+  - Categories
+  - Images
+  - *Optional* attributes
+
+--- 
+
+### Functional Requirements - Merchant Requirements
+
+- *Product Management System*
+  - Singup
+  - **Create** new products
+  - **Update** the product *properties*
+  - **Update** product *inventory*
+  - **View** product *data*
+- *Product Analytics*
+  - **View** real-time product *page visitors*
+  - **View** historical / projected *product performance*
+
+---
+
+### Functional Requirements - Users / Buyers Requirements
+
+- **Storefront**
+  - Web UI + Mobile users can
+    - **Browse** products
+    - **Search** products based on title / categories / description
+   - *Out of scope: User registration, product reviews*
+ - **Store Checkout**
+   - **Navigate** to the *checkout page*
+     - **View** breakdown of the bill, including taxes
+   - **Complete** the purchase by providing *shipping + payment info*
+   - **Send** *order updates* via *email / push notifications* to the user
+   - *Out of scope: Shopping card, delivery, payment*
+
+---
+
+### Functional Requirements - Continued
+
+- We now know what is
+  - In scope
+  - Out of scope
+- There's still high complexity due to
+  - Multiple actors (merchants, users)
+  - External services (payment API, delivery system API)
+- Solution
+  - **Sequence Diagram**
+
+---
+
+### Sequence Diagram
+
+![Sequence Diagram 1](assets/images/36.png)
+
+![Sequence Diagram 2](assets/images/37.png)
+
+![Sequence Diagram 3](assets/images/38.png)
+
+---
+
+### Quality Attributes Requirements - Merchants
+
+- **Scalability** (Not very high)
+  - Hundreds of merchants
+  - Low traffic
+  - Thousands of products
+- **Performance**
+  - Response time < 1 second at 50th percentile
+- **Consistency vs Availability**
+  - CP database(s)
+- **High Availability**
+  - Uptime: 99.5%
+
+---
+
+### Quality Attributes Requirements - Users / Buyers
+
+- **Scalability (very high)**
+  - 10-100 Million daily users
+  - Multiple countries
+  - High traffic at peak
+- **Performance**
+  - Product response time < 200ms, 50p, 500ms 99p
+  - Checkout response time < 1 second 99p
+- **Consistency vs Availability**
+  - Storefront: AP
+  - Checkout: CP
+- **High Availability**
+  - Internal SLA: Uptime of 99.99%
+
+---
+
+### Summary
+
+- Started with a vague and ambiguous description
+- Asked clarifying questions to identify what is:
+  - In-scope
+  - Not in-scope (not important / can delegate to 3rd party services)
+- Created a Sequence diagram
+- Captured a list of quality attributes (scalability, performance, etc)
+
+---
 
 
