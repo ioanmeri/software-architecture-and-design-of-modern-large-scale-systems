@@ -3,7 +3,8 @@
 - [Design a Highly Scalable Discussion Forum 1 - Requirements & API](#design-a-highly-scalable-discussion-forum-1---requirements--api)
 - [Design a Highly Scalable Discussion Forum 2 - Functional Architecture Diagram](#design-a-highly-scalable-discussion-forum-2---functional-architecture-diagram)
 - [Design a Highly Scalable Discussion Forum 3 - Final Software Architecture](#design-a-highly-scalable-discussion-forum-3---final-software-architecture)
-- [Design an E-commerce Marketplace Platform 1 - Requirements & Sequence Diagram](#design-a-highly-scalable-discussion-forum-1---requirements--api)
+- [Design an E-commerce Marketplace Platform 1 - Requirements & Sequence Diagram](#design-an-e-commerce-marketplace-platform-1---requirements--sequence-diagram)
+- [Design an E-commerce Marketplace Platform 2 - Functional Diagram](#design-an-e-commerce-marketplace-platform-2---functional-diagram)
 
 ---
 
@@ -622,4 +623,169 @@ we need to clarify the functionality for both of them separately
 
 ---
 
+## Design an E-commerce Marketplace Platform 2 - Functional Diagram
 
+## Product Management System
+
+- Product Managament System stores information about the merchant & their credentials
+- Document Store - NoSQL - because different types of products can have different optional attributes
+- Object Store to store images
+- Inventory service stores the inventory for each product id in a high performance Key / Value Store
+
+![Product Managament System](assets/images/39.png)
+
+---
+
+## Storefont
+- Web App Service to store and render HTML pages and return them to the user
+- API Gateway for both mobile and web API calls
+
+---
+
+### Merchants vs Storefront Users for Products
+
+| Merchants Requirements | Storefront Users Requirements |
+| ---------------------- | ----------------------------- |
+| **Write**-intensive workload | **Read**-intensive workload |
+| CP (**Consistency**, Partition Tolerance) | AP (**Availability**, Partition Tolerance) |
+
+We should avoid having **Contention over Product Writes and Read**
+
+> Solution: **CQRS**
+
+---
+
+### Products Search service
+
+![Storefront](assets/images/40.png)
+
+- Receives updates from the Products Service through a message broker
+- Will store the product information in a read optimized database, favors availability over consistency
+
+We will also use a **NoSQL** Database technology with an **efficient text search engine**. 
+This way if we create an index on the 
+- products title
+- description
+- categories
+
+we will ensure very fast responses to product search queries
+
+---
+
+### Store Checkout
+
+We don't have to worry about the products in the shopping cart - client side - until the user navigates to the checkout page on our store website or mobile app
+
+Once they do, we want to give them a complete breakdown of their payments includes taxes
+
+---
+
+### Taxes Service
+
+![Taxes](assets/images/41.png)
+
+- Taxes service with a related database with all tax related data
+- Will calculate the taxes based on the product price, type, user location
+  - now we do care about consistency, we go to the source of truth ➡️ Products Service
+
+ ---
+
+ ### Order Service
+
+![Orders](assets/images/42.png)
+
+- Orders service
+  - we send the user confirmation, as soon as the order service receives a response only from the inventory service
+   - we will perform the billing and shipping asynchronously, one after the other
+   - If there is payment issue / the product cannot be shipped to the given address
+   - Downside: user will find out after the fact via email ro push / trade off
+- Payments service
+- Shipping service
+
+![Orders 2](assets/images/43.png)
+
+
+---
+
+### Order Service
+
+- Use Event Sourcing Pattern
+- Benefit 1: We can add a notification service that can subscribe to that same topic
+- Benefit 2: Order recovery
+
+
+
+**Order Recovery Service**
+
+![Orders Recovery](assets/images/44.png)
+
+
+- Since every update is stored within the message broker along with it's timestamp
+- Order Recovery Service can subscribe to that topic and watch every currenty in-flight order
+- e.g. Resume Order by Schedule Shipping in case it crashed
+
+---
+
+### Shipping API
+
+![Shipping](assets/images/45.png)
+
+![Shipping 2](assets/images/46.png)
+
+We can also expose an API endpoint to the delivery system we are using, this way they can send us updates
+which we can propage to the user using the notification service
+
+---
+
+### Product Analytics for Merchants
+
+We need to collect data from several services
+- Product Search Service: Product Page Views
+- Order Service: Data about product sales
+
+---
+
+### Merchant Analytics Requirements
+
+- **Real-time** number of product page visitors
+- **Historical** and **Projected** trends from *multiple sources*
+
+> Solution: **Lambda Architecture**
+
+Any time a product is viewed by a user, 
+- the product search service will send an event to a special topic / channel to a message broker
+
+![Lambda 1](assets/images/47.png)
+
+Similarly the order service
+- will publish an event on another topic, whenever a purchase is complete
+
+![Lambda 1](assets/images/48.png)
+
+On receiving end of those events will have **Analytics Lambda Architecture** with two processing layers
+- Speed layer for real time data
+   - Merchant wants to know how many users are visiting the product page
+      - Sustem management service will use the speed layer
+![Speed layer](assets/images/49.png)
+
+- Batch layer that runs on a schedule
+   - Merchant wants to see the fused historical data and projected trends
+      - will use the batch layer
+
+
+![Speed layer](assets/images/50.png)
+
+---
+
+### Summary
+
+![Speed layer](assets/images/51.png)
+
+- Microservices Architecture for organizational scalability
+- CQRS to separate a write-intensive CP database from read-intensive AP database
+- NoSQL database with a dedicated text search engine
+- Tradeoff between synchronous and asynchrouns processing
+- Event Sourcing for failure recovery, auditing and organizational scalability
+- Lambda Architecture to provide real-time and batch processed historic and projected data
+
+---
