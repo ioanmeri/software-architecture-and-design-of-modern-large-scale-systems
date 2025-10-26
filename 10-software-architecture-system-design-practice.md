@@ -5,6 +5,7 @@
 - [Design a Highly Scalable Discussion Forum 3 - Final Software Architecture](#design-a-highly-scalable-discussion-forum-3---final-software-architecture)
 - [Design an E-commerce Marketplace Platform 1 - Requirements & Sequence Diagram](#design-an-e-commerce-marketplace-platform-1---requirements--sequence-diagram)
 - [Design an E-commerce Marketplace Platform 2 - Functional Diagram](#design-an-e-commerce-marketplace-platform-2---functional-diagram)
+- [Design an E-commerce Marketplace Platform 3 - Final Software Architecture](#design-an-e-commerce-marketplace-platform-3---final-software-architecture)
 
 ---
 
@@ -789,3 +790,61 @@ On receiving end of those events will have **Analytics Lambda Architecture** wit
 - Lambda Architecture to provide real-time and batch processed historic and projected data
 
 ---
+
+## Design an E-commerce Marketplace Platform 3 - Final Software Architecture
+
+### Addressing Non-Functional Requirements for Merchants
+
+- Place Product Management System behind a Load Balancer
+- Primary DB and replicas for High Availability
+- Place Prodcuts and Inventory Services behind a Load Balancer
+  - allow for automatic autoscaling based on the traffic
+- Run multiple replicas of each DB for High Availability
+  - help will data loss, read performance
+- Configure Products & Inventory DBs to be in CP category
+
+![Non functional requirements of merchants](assets/images/52.png)
+
+---
+
+### Addressing Non-Functional Requirements for Storefront Users / Buyers
+
+- Place all services behind a Load Balancer with autoscaling policies
+  - Order Recovery and Notifications Services, don't require a LB
+     - They subscribe to events from Message Broker, don't get HTTP traffic directly
+- Multiple replicas of Search Database running on separate computers
+  - Database Technology in AP mode
+- Replicate the Taxes Database for High Availability
+
+---
+
+### Performance Improvements
+
+- Anytime a merchant upload an image for a product, we can also generate a smaller thumbnail
+  - Send thumbnails on search products listings
+  - Also utilize a CDN provider to load images faster
+- Add an In Memory Cache to the product Search Service
+  - Popular Products
+  - Results to Popular Queries
+
+![Performance Improvements](assets/images/53.png)
+
+---
+
+### Multi Data Center Deployemnt
+
+- Run our system in multiple Datacenter world-wide using a GSLB
+  - if one of the datacenter's experiences Power Outage / Natural Disaster can fallback to the other Datacenter
+  - GSLB is constantly monitoring the health of each Datacenter
+- Fully Distributed E-Commerce Marketplace Platform
+
+![E-Commerce GSLB](assets/images/54.png)
+
+---
+
+### Overall Architecture
+
+![Final Design](assets/images/55.png)
+
+---
+
